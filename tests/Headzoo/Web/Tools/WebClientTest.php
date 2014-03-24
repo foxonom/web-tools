@@ -1,12 +1,12 @@
 <?php
-use Headzoo\Web\Tools\WebRequest;
+use Headzoo\Web\Tools\WebClient;
 
-class WebRequestTest
+class WebClientTest
     extends PHPUnit_Framework_TestCase
 {
     /**
      * The test fixture
-     * @var WebRequest
+     * @var WebClient
      */
     protected $web;
 
@@ -16,11 +16,11 @@ class WebRequestTest
      */
     protected function setUp()
     {
-        $this->web = new WebRequest();
+        $this->web = new WebClient();
     }
 
     /**
-     * @covers Headzoo\Web\Tools\WebRequest::request
+     * @covers Headzoo\Web\Tools\WebClient::request
      */
     public function testRequest_Get()
     {
@@ -30,11 +30,11 @@ class WebRequestTest
     }
 
     /**
-     * @covers Headzoo\Web\Tools\WebRequest::request
+     * @covers Headzoo\Web\Tools\WebClient::request
      */
     public function testRequest_Post()
     {
-        $this->web->setMethod(WebRequest::METHOD_POST);
+        $this->web->setMethod(WebClient::METHOD_POST);
         $actual = $this->web->request("http://localhost:8888/");
         $this->assertContains("Hello, World!", $actual);
         $this->assertEquals(200, $this->web->getStatusCode());

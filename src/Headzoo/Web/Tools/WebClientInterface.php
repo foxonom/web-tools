@@ -5,7 +5,7 @@ use InvalidArgumentException;
 /**
  * Interface for classes which make http requests.
  */
-interface WebRequestInterface
+interface WebClientInterface
 {
     /**
      * Get request method
@@ -34,7 +34,7 @@ interface WebRequestInterface
     /**
      * Sets the request method
      * 
-     * Should be one of WebRequestInterface::METHOD_GET or WebRequestInterface::METHOD_POST.
+     * Should be one of WebClientInterface::METHOD_GET or WebClientInterface::METHOD_POST.
      * 
      * @param  string $method The request method
      * @return mixed
@@ -57,26 +57,26 @@ interface WebRequestInterface
      * 
      * Example:
      * ```php
-     * $http = new WebRequest(HTTP::METHOD_GET);
+     * $http = new WebClient(HTTP::METHOD_GET);
      * $http->setData("name=headz&job=programmer");
      * $http->request("http://example.com");
      * 
      * // The request will be made using the url "http://example.com?name=headz&job=programmer".
      *
-     * $http = new WebRequest(HTTP::METHOD_GET);
+     * $http = new WebClient(HTTP::METHOD_GET);
      * $http->setData(["name" => "headz", "job" => "programmer"]);
      * $http->request("http://example.com");
      *
      * // The request will be made using the url "http://example.com?name=headz&job=programmer".
      * 
-     * $http = new WebRequest(HTTP::METHOD_POST);
+     * $http = new WebClient(HTTP::METHOD_POST);
      * $http->setData("{'name':'headz', 'job':'programmer'}");
      * $http->request("http://example.com");
      *
      * // The request will be made using the url "http://example.com" with the raw post
      * // data "{'name':'headz', 'job':'programmer'}".
      * 
-     * $http = new WebRequest(HTTP::METHOD_POST);
+     * $http = new WebClient(HTTP::METHOD_POST);
      * $http->setData(["name" => "headz", "job" => "programmer"]);
      * $http->request("http://example.com");
      * 
@@ -97,7 +97,7 @@ interface WebRequestInterface
      * 
      * Example:
      * ```php
-     * $http = new WebRequest();
+     * $http = new WebClient();
      * $http->addHeader("Content-Type", "text/html");
      * // Or like this.
      * $http->addHeader("Content-Type: text/html");

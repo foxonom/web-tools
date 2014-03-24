@@ -8,13 +8,13 @@ use InvalidArgumentException;
  * 
  * Example:
  * ```php
- * $http     = new WebRequest();
+ * $http     = new WebClient();
  * $response = $http->request("http://example.com");
  * $status   = $http->getStatusCode();
  * ```
  */
-class WebRequest
-    implements WebRequestInterface
+class WebClient
+    implements WebClientInterface
 {
     /**
      * The http status code returned by the requested server
@@ -69,7 +69,7 @@ class WebRequest
     /**
      * Constructor
      * 
-     * @param string $method    The request method, one of HTTP::METHOD_GET or HTTP::METHOD_POST
+     * @param string $method    The request method, one of WebClient::METHOD_GET or WebClient::METHOD_POST
      * @param string $userAgent The user agent string
      */
     public function __construct($method = self::METHOD_GET, $userAgent = self::DEFAULT_USER_AGENT)
