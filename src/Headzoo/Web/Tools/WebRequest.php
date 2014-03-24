@@ -5,7 +5,7 @@ use InvalidArgumentException;
 /**
  * Represents a client http request.
  */
-class HttpRequest
+class WebRequest
 {
     /**
      * The request data

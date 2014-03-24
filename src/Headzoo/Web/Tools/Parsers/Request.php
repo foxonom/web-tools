@@ -1,7 +1,7 @@
 <?php
 namespace Headzoo\Web\Tools\Parsers;
 use Headzoo\Web\Tools\HttpMethods;
-use Headzoo\Web\Tools\HttpRequest;
+use Headzoo\Web\Tools\WebRequest;
 
 /**
  * Parses client requests into individual components.
@@ -55,7 +55,7 @@ class Request
      * Parses the raw request data
      * 
      * @param  string $request The request data
-     * @return HttpRequest
+     * @return WebRequest
      * @throws \Headzoo\Web\Tools\Parsers\Exceptions\MalformedRequestException When the request is malformed and cannot be parsed
      */
     public function parse($request)
@@ -109,7 +109,7 @@ class Request
             }
         }
         
-        return new HttpRequest($data);
+        return new WebRequest($data);
     }
 
     /**

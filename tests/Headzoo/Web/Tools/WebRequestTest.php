@@ -1,14 +1,14 @@
 <?php
-use Headzoo\Web\Tools\HttpRequest;
+use Headzoo\Web\Tools\WebRequest;
 
-class HttpRequestTest
+class WebRequestTest
     extends PHPUnit_Framework_TestCase
 {
     protected $data;
     
     /**
      * The test fixture
-     * @var HttpRequest
+     * @var WebRequest
      */
     protected $fixture;
 
@@ -29,11 +29,11 @@ class HttpRequestTest
             ],
             "body"    => null
         ];
-        $this->fixture = new HttpRequest($this->data);
+        $this->fixture = new WebRequest($this->data);
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::__construct
+     * @covers Headzoo\Web\Tools\WebRequest::__construct
      * @expectedException InvalidArgumentException
      */
     public function testConstruct_InvalidArgumentException()
@@ -50,11 +50,11 @@ class HttpRequestTest
             "params"  => [],
             "files"   => []
         ];
-        new HttpRequest($data);
+        new WebRequest($data);
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getVersion
+     * @covers Headzoo\Web\Tools\WebRequest::getVersion
      */
     public function testGetVersion()
     {
@@ -65,7 +65,7 @@ class HttpRequestTest
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getMethod
+     * @covers Headzoo\Web\Tools\WebRequest::getMethod
      */
     public function testGetMethod()
     {
@@ -76,7 +76,7 @@ class HttpRequestTest
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getHost
+     * @covers Headzoo\Web\Tools\WebRequest::getHost
      */
     public function testGetHost()
     {
@@ -87,7 +87,7 @@ class HttpRequestTest
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getPath
+     * @covers Headzoo\Web\Tools\WebRequest::getPath
      */
     public function testGetPath()
     {
@@ -98,7 +98,7 @@ class HttpRequestTest
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getHeaders
+     * @covers Headzoo\Web\Tools\WebRequest::getHeaders
      */
     public function testGetHeaders()
     {
@@ -109,7 +109,7 @@ class HttpRequestTest
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getBody
+     * @covers Headzoo\Web\Tools\WebRequest::getBody
      */
     public function testGetBody()
     {
