@@ -40,7 +40,7 @@ REQ;
 
         $request = $this->parser->parse($request);
         $this->assertInstanceOf(
-            'Headzoo\Web\Tools\HttpRequest',
+            'Headzoo\Web\Tools\WebRequest',
             $request
         );
         $this->assertEquals(
