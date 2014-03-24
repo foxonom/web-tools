@@ -112,7 +112,7 @@ REQ;
 
     /**
      * @covers Headzoo\Web\Tools\Parsers\Request::parse
-     * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
+     * @expectedException \Headzoo\Web\Tools\Parsers\Exceptions\MalformedRequestException
      */
     public function testParse_Get_Malformed_Body()
     {
@@ -126,7 +126,7 @@ REQ;
 
     /**
      * @covers Headzoo\Web\Tools\Parsers\Request::parse
-     * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
+     * @expectedException \Headzoo\Web\Tools\Parsers\Exceptions\MalformedRequestException
      */
     public function testParse_Get_Malformed_Host()
     {
@@ -139,7 +139,7 @@ REQ;
 
     /**
      * @covers Headzoo\Web\Tools\Parsers\Request::parse
-     * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
+     * @expectedException \Headzoo\Web\Tools\Parsers\Exceptions\MalformedRequestException
      */
     public function testParse_Get_Malformed_Path()
     {
