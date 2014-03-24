@@ -23,7 +23,7 @@ class HttpHeadersParser
                 $options = $line;
             } else if (preg_match("~^HTTP/~", $line)) {
                 $options = $line;
-            } else {
+            } else if (!empty($line)) {
                 list($name, $value) = preg_split("/:\\S*/", $line, 2);
                 $name  = str_replace("-", " ", $name);
                 $name  = ucwords(strtolower($name));
