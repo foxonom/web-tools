@@ -66,5 +66,36 @@ REQ;
             "Cache-Control",
             $request->getHeaders()
         );
+
+        $request = <<< REQ
+POST /index.html HTTP/1.1
+Host: localhost:8888
+Connection: keep-alive
+Content-Length: 239
+Cache-Control: no-cache
+Origin: chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryPfBGRI1TIGQA85Z8
+Accept: */*
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: en-US,en;q=0.8,de;q=0.6,ms;q=0.4,sl;q=0.2,sr;q=0.2
+
+------WebKitFormBoundaryPfBGRI1TIGQA85Z8
+Content-Disposition: form-data; name="name"
+
+Sean
+------WebKitFormBoundaryPfBGRI1TIGQA85Z8
+Content-Disposition: form-data; name="job"
+
+programmer
+------WebKitFormBoundaryPfBGRI1TIGQA85Z8--
+
+
+REQ;
+        $request = $this->parser->parse($request);
+        $this->assertEquals(
+            ["name" => "Sean", "job" => "programmer"],
+            $request->getParams()
+        );
     }
 }

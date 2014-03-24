@@ -32,7 +32,9 @@ class HttpRequestParser
             "host"    => null,
             "path"    => null,
             "headers" => [],
-            "body"    => trim($parts[1])
+            "body"    => trim($parts[1]),
+            "params"  => [],
+            "files"   => []
         ];
 
         // Splitting up the headers, the first header must be the options, which must
@@ -63,6 +65,41 @@ class HttpRequestParser
             }
         }
         
+        $data = $this->parseBody($data);
         return new HttpRequest($data);
+    }
+
+    /**
+     * Parse raw http request body
+     * 
+     * @param  array $data The request data
+     * @return array
+     */
+    protected function parseBody($data)
+    {
+        if (!empty($data["body"]) && !empty($data["headers"]["Content-Type"])) {
+            $matched = preg_match("/boundary=(.*)$/", $data["headers"]["Content-Type"], $matches);
+            if (!$matched) {
+                parse_str(urldecode($data["body"]), $params);
+            } else {
+                $boundary = $matches[1];
+                $blocks   = preg_split("/-+$boundary/", $data["body"]);
+                array_pop($blocks);
+
+                foreach ($blocks as $block) {
+                    if (!empty($block)) {
+                        if (strpos($block, "application/octet-stream") !== false) {
+                            preg_match("/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s", $block, $matches);
+                            $data["files"][$matches[1]] = $matches[2];
+                        } else {
+                            preg_match("/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s", $block, $matches);
+                            $data["params"][$matches[1]] = $matches[2];
+                        }
+                    }
+                }
+            }
+        }
+        
+        return $data;
     }
 } 

@@ -46,7 +46,9 @@ class HttpRequestTest
                 "Connection" => "keep-alive",
                 "User-Agent" => "Mozilla/5.0"
             ],
-            "body"    => null
+            "body"    => null,
+            "params"  => [],
+            "files"   => []
         ];
         new HttpRequest($data);
     }
@@ -114,41 +116,6 @@ class HttpRequestTest
         $this->assertEquals(
             $this->data["body"],
             $this->fixture->getBody()
-        );
-    }
-
-    /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getParams
-     */
-    public function testGetParams()
-    {
-        $body = <<< BODY
-------WebKitFormBoundaryPfBGRI1TIGQA85Z8
-Content-Disposition: form-data; name="name"
-
-Sean
-------WebKitFormBoundaryPfBGRI1TIGQA85Z8
-Content-Disposition: form-data; name="job"
-
-programmer
-------WebKitFormBoundaryPfBGRI1TIGQA85Z8--
-BODY;
-
-        $this->data = [
-            "version" => "HTTP/1.1",
-            "method"  => "POST",
-            "host"    => "localhost:8888",
-            "path"    => "/",
-            "headers" => [
-                "Content-Length" => "239",
-                "Content-Type"   => "multipart/form-data; boundary=----WebKitFormBoundaryPfBGRI1TIGQA85Z8"
-            ],
-            "body"    => $body
-        ];
-        $this->fixture = new HttpRequest($this->data);
-        $this->assertEquals(
-            ["name" => "Sean", "job" => "programmer"],
-            $this->fixture->getParams()
         );
     }
 }

@@ -17,31 +17,21 @@ class HttpRequest
         "host"    => null,
         "path"    => null,
         "headers" => [],
-        "body"    => null
+        "body"    => null,
+        "params"  => [],
+        "files"   => []
     ];
-
-    /**
-     * The get/post parameters
-     * @var array
-     */
-    protected $params;
-
-    /**
-     * Data for uploaded files
-     * @var array
-     */
-    protected $files;
 
     /**
      * Constructor
      * 
      * @param array $data The request data
-     * @throws InvalidArgumentException When any of the request values are empty except the body
+     * @throws InvalidArgumentException When any of the request values are empty except the body, params, and files
      */
     public function __construct(array $data)
     {
         foreach($this->data as $key => $value) {
-            if (empty($data[$key]) && "body" !== $key) {
+            if (empty($data[$key]) && "body" !== $key && "params" !== $key && "files" !== $key) {
                 throw new InvalidArgumentException(
                     "The data value for key '{$key}' cannot be empty."
                 );
@@ -117,10 +107,7 @@ class HttpRequest
      */
     public function getParams()
     {
-        if (null === $this->params) {
-            $this->parseBody();
-        }
-        return $this->params;
+        return $this->data["params"];
     }
 
     /**
@@ -130,41 +117,6 @@ class HttpRequest
      */
     public function getFiles()
     {
-        if (null === $this->params) {
-            $this->parseBody();
-        }
-        return $this->files;
-    }
-
-    /**
-     * Parse raw http request body
-     */
-    protected function parseBody()
-    {
-        $this->params = [];
-        $this->files  = [];
-
-        if (!empty($this->data["body"]) && !empty($this->data["headers"]["Content-Type"])) {
-            $matched = preg_match("/boundary=(.*)$/", $this->data["headers"]["Content-Type"], $matches);
-            if (!$matched) {
-                parse_str(urldecode($this->data["body"]), $this->params);
-            } else {
-                $boundary = $matches[1];
-                $blocks   = preg_split("/-+$boundary/", $this->data["body"]);
-                array_pop($blocks);
-
-                foreach ($blocks as $block) {
-                    if (!empty($block)) {
-                        if (strpos($block, "application/octet-stream") !== false) {
-                            preg_match("/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s", $block, $matches);
-                            $this->files[$matches[1]] = $matches[2];
-                        } else {
-                            preg_match("/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s", $block, $matches);
-                            $this->params[$matches[1]] = $matches[2];
-                        }
-                    }
-                }
-            }
-        }
+        return $this->data["files"];
     }
 } 
