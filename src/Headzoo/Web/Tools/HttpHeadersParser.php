@@ -14,7 +14,7 @@ class HttpHeadersParser
     {
         $methods = HttpMethods::getValues();
         $methods = join("|", $methods);
-        $regex   = "/^({$methods})/i";
+        $regex   = "~^({$methods})\\b~i";
         
         $parsed  = [];
         $lines = preg_split("/\\R/", $headers);
