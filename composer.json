@@ -1,0 +1,25 @@
+{
+    "name": "headzoo/web-tools",
+    "description": "A collection of PHP classes used for making and handling web requests.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["php", "web", "http"],
+    "version": "0.1",
+    "authors": [
+        {
+            "name": "headzoo",
+            "email": "sean@headzoo.io"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "ext-curl": "*",
+        "psr/log": "dev-master",
+        "headzoo/utilities": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "Headzoo": "src/"
+        }
+    }
+}
