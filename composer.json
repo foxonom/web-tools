@@ -15,7 +15,7 @@
         "php": ">=5.5.0",
         "ext-curl": "*",
         "psr/log": "dev-master",
-        "headzoo/utilities": "0.2"
+        "headzoo/utilities": "dev-master"
     },
     "autoload": {
         "psr-0": {
