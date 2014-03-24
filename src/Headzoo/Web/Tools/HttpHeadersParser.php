@@ -4,7 +4,7 @@ namespace Headzoo\Web\Tools;
 /**
  * Parses request/response headers into an array.
  */
-class HeadersParser
+class HttpHeadersParser
 {
     /**
      * Parses raw http headers, and returns them as an array

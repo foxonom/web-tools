@@ -1,12 +1,12 @@
 <?php
-use Headzoo\Web\Tools\HeadersParser;
+use Headzoo\Web\Tools\HttpHeadersParser;
 
-class HeadersParserTest
+class HttpHeadersParserTest
     extends PHPUnit_Framework_TestCase
 {
     /**
      * The test fixture
-     * @var HeadersParser
+     * @var HttpHeadersParser
      */
     protected $parser;
 
@@ -16,11 +16,11 @@ class HeadersParserTest
      */
     protected function setUp()
     {
-        $this->parser = new HeadersParser();
+        $this->parser = new HttpHeadersParser();
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HeadersParser::parse
+     * @covers Headzoo\Web\Tools\HttpHeadersParser::parse
      */
     public function testParse_Request()
     {
@@ -49,7 +49,7 @@ HEADERS;
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HeadersParser::parse
+     * @covers Headzoo\Web\Tools\HttpHeadersParser::parse
      */
     public function testParse_Response()
     {
