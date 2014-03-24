@@ -5,6 +5,7 @@
     "license": "MIT",
     "keywords": ["php", "web", "http"],
     "version": "0.1",
+    "minimum-stability" : "dev",
     "authors": [
         {
             "name": "headzoo",
