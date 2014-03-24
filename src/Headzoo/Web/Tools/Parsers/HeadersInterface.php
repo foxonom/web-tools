@@ -4,7 +4,7 @@ namespace Headzoo\Web\Tools\Parsers;
 /**
  * Interface for classes which can parse raw request/response http headers.
  */
-interface HttpHeadersParserInterface
+interface HeadersInterface
 {
     /**
      * Parses raw http headers, and returns them as an array

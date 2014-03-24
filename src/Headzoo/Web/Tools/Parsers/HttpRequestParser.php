@@ -11,16 +11,17 @@ class HttpRequestParser
 {
     /**
      * Used to parse the request headers
-     * @var HttpHeadersParserInterface
+     * 
+*@var HeadersInterface
      */
     protected $headerParser;
 
     /**
      * Constructor
      * 
-     * @param HttpHeadersParserInterface $headersParser Object used to parse request headers
+     * @param HeadersInterface $headersParser Object used to parse request headers
      */
-    public function __construct(HttpHeadersParserInterface $headersParser = null)
+    public function __construct(HeadersInterface $headersParser = null)
     {
         if (null !== $headersParser) {
             $this->setHeadersParser($headersParser);
@@ -30,10 +31,10 @@ class HttpRequestParser
     /**
      * Sets the object which will be used to parse request headers
      * 
-     * @param  HttpHeadersParserInterface $headersParser The headers parser
+     * @param  HeadersInterface $headersParser The headers parser
      * @return $this
      */
-    public function setHeadersParser(HttpHeadersParserInterface $headersParser)
+    public function setHeadersParser(HeadersInterface $headersParser)
     {
         $this->headerParser = $headersParser;
         return $this;
@@ -42,12 +43,12 @@ class HttpRequestParser
     /**
      * Returns the object which will be used to parse request headers
      * 
-     * @return HttpHeadersParserInterface
+     * @return HeadersInterface
      */
     public function getHeadersParser()
     {
         if (null === $this->headerParser) {
-            $this->headerParser = new HttpHeadersParser();
+            $this->headerParser = new Headers();
         }
         return $this->headerParser;
     }

@@ -5,8 +5,8 @@ use Headzoo\Web\Tools\HttpMethods;
 /**
  * Parses request/response headers into an array.
  */
-class HttpHeadersParser
-    implements HttpHeadersParserInterface
+class Headers
+    implements HeadersInterface
 {
     /**
      * {@inheritDoc}

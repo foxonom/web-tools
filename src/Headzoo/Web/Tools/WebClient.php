@@ -86,7 +86,8 @@ class WebClient
 
     /**
      * Used to parse the request headers
-     * @var Parsers\HttpHeadersParserInterface
+     * 
+*@var Parsers\HeadersInterface
      */
     private $headerParser;
 
@@ -105,10 +106,10 @@ class WebClient
     /**
      * Sets the object which will be used to parse request headers
      *
-     * @param  Parsers\HttpHeadersParserInterface $headersParser The headers parser
+     * @param  Parsers\HeadersInterface $headersParser The headers parser
      * @return $this
      */
-    public function setHeadersParser(Parsers\HttpHeadersParserInterface $headersParser)
+    public function setHeadersParser(Parsers\HeadersInterface $headersParser)
     {
         $this->headerParser = $headersParser;
         return $this;
@@ -117,12 +118,12 @@ class WebClient
     /**
      * Returns the object which will be used to parse request headers
      *
-     * @return Parsers\HttpHeadersParserInterface
+     * @return Parsers\HeadersInterface
      */
     public function getHeadersParser()
     {
         if (null === $this->headerParser) {
-            $this->headerParser = new Parsers\HttpHeadersParser();
+            $this->headerParser = new Parsers\Headers();
         }
         return $this->headerParser;
     }
