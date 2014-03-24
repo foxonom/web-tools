@@ -23,10 +23,22 @@ class WebClient
     protected $statusCode = 200;
 
     /**
+     * The full request headers
+     * @var array
+     */
+    protected $requestHeaders;
+
+    /**
+     * Information on the last request
+     * @var array
+     */
+    protected $requestInfo = [];
+
+    /**
      * The request method
      * @var string
      */
-    protected $method = self::METHOD_GET;
+    protected $method = HttpMethods::GET;
     
     /**
      * The get/post data
@@ -39,7 +51,7 @@ class WebClient
      * @var array
      */
     protected $headers = [
-        "Content-Type: text/html"
+        "Content-Type" => self::DEFAULT_CONTENT_TYPE
     ];
 
     /**
@@ -67,42 +79,52 @@ class WebClient
     private $curl;
 
     /**
+     * Used to release the curl resource
+     * @var Complete
+     */
+    private $complete;
+
+    /**
+     * Used to parse the request headers
+     * @var HttpHeadersParserInterface
+     */
+    private $headerParser;
+
+    /**
      * Constructor
      * 
      * @param string $method    The request method, one of WebClient::METHOD_GET or WebClient::METHOD_POST
      * @param string $userAgent The user agent string
      */
-    public function __construct($method = self::METHOD_GET, $userAgent = self::DEFAULT_USER_AGENT)
+    public function __construct($method = HttpMethods::GET, $userAgent = self::DEFAULT_USER_AGENT)
     {
         $this->setMethod($method);
         $this->setUserAgent($userAgent);
     }
-    
+
     /**
-     * {@inheritDoc}
+     * Sets the object which will be used to parse request headers
+     *
+     * @param  HttpHeadersParserInterface $headersParser The headers parser
+     * @return $this
      */
-    public function request($url)
+    public function setHeadersParser(HttpHeadersParserInterface $headersParser)
     {
-        $this->url = $url;
-        $this->prepareCurl();
-        $this->prepareData();
-        
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        $complete = Complete::factory(function() {
-            $this->url = null;
-            curl_close($this->curl);
-        });
-        
-        curl_setopt($this->curl, CURLOPT_URL, $url);
-        $response = curl_exec($this->curl);
-        $this->statusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-        if (false === $response) {
-            $error = curl_error($this->curl);
-            $code  = curl_errno($this->curl);
-            throw new Exceptions\WebException($error, $code);
+        $this->headerParser = $headersParser;
+        return $this;
+    }
+
+    /**
+     * Returns the object which will be used to parse request headers
+     *
+     * @return HttpHeadersParserInterface
+     */
+    public function getHeadersParser()
+    {
+        if (null === $this->headerParser) {
+            $this->headerParser = new HttpHeadersParser();
         }
-        
-        return $response;
+        return $this->headerParser;
     }
 
     /**
@@ -110,9 +132,9 @@ class WebClient
      */
     public function setMethod($method)
     {
-        if ($method !== self::METHOD_GET && $method !== self::METHOD_POST) {
+        if (!in_array($method, HttpMethods::getValues())) {
             throw new InvalidArgumentException(
-                "Method must be either 'GET' or 'POST'."
+                "Invalid request method."
             );
         }
         $this->method = $method;
@@ -135,7 +157,7 @@ class WebClient
     public function addHeader($header, $value = null)
     {
         if (null !== $value) {
-            $this->headers[] = "{$header}: {$value}"; 
+            $this->headers[$header] = $value;
         } else {
             $this->headers[] = $header;
         }
@@ -171,20 +193,79 @@ class WebClient
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getRequestHeaders()
+    {
+        if (null === $this->requestHeaders) {
+            $this->requestHeaders = [];
+            if (!empty($this->requestInfo["request_header"])) {
+                $headersParser        = $this->getHeadersParser();
+                $this->requestHeaders = $headersParser->parse($this->requestInfo["request_header"]);
+            }
+        }
+        
+        return $this->requestHeaders;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRequestInfo()
+    {
+        return $this->requestInfo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function request($url)
+    {
+        $this->url = $url;
+        $this->prepareCurl();
+        $this->validateRequest();
+
+        curl_setopt($this->curl, CURLOPT_URL, $this->url);
+        $response = curl_exec($this->curl);
+        $this->requestInfo = curl_getinfo($this->curl);
+        $this->statusCode  = $this->requestInfo["http_code"];
+        if (false === $response) {
+            throw new Exceptions\WebException(
+                curl_error($this->curl),
+                curl_errno($this->curl)
+            );
+        }
+
+        return $response;
+    }
+    
+    /**
      * Prepares curl to make an http request using the class property values
      */
     protected function prepareCurl()
     {
         if (is_resource($this->curl)) {
             curl_close($this->curl);
+            $this->curl = null;
+        }
+        if (null !== $this->complete) {
+            $this->complete = null;
         }
 
-        $this->curl = curl_init();
+        $this->curl     = curl_init();
+        $this->complete = Complete::factory(function() {
+            if ($this->curl) {
+                curl_close($this->curl);
+            }
+            $this->complete = null;
+        });
+        
         $opts = [
             CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_HTTPHEADER      => $this->headers,
             CURLOPT_USERAGENT       => $this->userAgent,
-            CURLOPT_POST            => $this->method === self::METHOD_POST
+            CURLINFO_HEADER_OUT     => true,
+            CURLOPT_FOLLOWLOCATION  => true,
+            CURLOPT_POST            => $this->method === HttpMethods::POST
         ];
         if (!empty($this->auth)) {
             $opts[CURLOPT_USERPWD] = sprintf("%s:%s", $this->auth["user"], $this->auth["pass"]);
@@ -192,6 +273,9 @@ class WebClient
         foreach($opts as $opt => $value) {
             curl_setopt($this->curl, $opt, $value);
         }
+
+        $this->prepareHeaders();
+        $this->prepareData();
     }
 
     /**
@@ -200,7 +284,7 @@ class WebClient
     protected function prepareData()
     {
         if (!empty($this->data)) {
-            if ($this->method === self::METHOD_GET) {
+            if ($this->method === HttpMethods::GET) {
                 if (is_array($this->data)) {
                     $data = http_build_query($this->data);
                 } else {
@@ -211,6 +295,39 @@ class WebClient
             } else {
                 curl_setopt($this->curl, CURLOPT_POSTFIELDS, $this->data);
             }
+        }
+    }
+
+    /**
+     * Adds the headers to the request
+     */
+    protected function prepareHeaders()
+    {
+        // Need to let curl set the content type when posting. Our own content type
+        // value would overwrite that.
+        if ($this->method === HttpMethods::POST && !empty($this->headers["Content-Type"])) {
+            unset($this->headers["Content-Type"]);
+        }
+        $headers = [];
+        foreach($this->headers as $name => $value) {
+            if (is_int($name)) {
+                $headers[] = $value;
+            } else {
+                $headers[] = "{$name}: {$value}";
+            }
+        }
+        
+        if (!empty($headers)) {
+            curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
+        }
+    }
+    
+    protected function validateRequest()
+    {
+        if ($this->method === HttpMethods::POST && empty($this->data)) {
+            throw new Exceptions\WebException(
+                "Using method POST without data."
+            );
         }
     }
 } 

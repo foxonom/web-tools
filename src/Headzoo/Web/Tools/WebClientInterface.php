@@ -11,6 +11,11 @@ interface WebClientInterface
      * The default user agent
      */
     const DEFAULT_USER_AGENT = "headzoo/web-tools";
+
+    /**
+     * The default content type
+     */
+    const DEFAULT_CONTENT_TYPE = "text/plain";
     
     /**
      * Sends the request and returns the response
