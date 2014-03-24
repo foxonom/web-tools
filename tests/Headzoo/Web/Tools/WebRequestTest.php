@@ -36,8 +36,8 @@ class WebRequestTest
     public function testRequest_Post()
     {
         $this->web->setMethod(WebRequest::METHOD_POST);
-        $actual = $this->web->request("http://www.google.com/");
-        $this->assertContains("google.com", $actual);
+        $actual = $this->web->request("http://localhost:8888/");
+        $this->assertContains("Hello, World!", $actual);
         $this->assertEquals(200, $this->web->getStatusCode());
     }
 }
