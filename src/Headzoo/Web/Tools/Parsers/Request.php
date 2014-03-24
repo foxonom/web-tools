@@ -4,9 +4,10 @@ use Headzoo\Web\Tools\HttpMethods;
 use Headzoo\Web\Tools\WebRequest;
 
 /**
- * Parses client requests into individual components.
+ * Parses raw client requests into individual components.
  */
 class Request
+    implements RequestInterface
 {
     /**
      * Used to parse the request headers
@@ -27,10 +28,7 @@ class Request
     }
 
     /**
-     * Sets the object which will be used to parse request headers
-     * 
-     * @param  HeadersInterface $headersParser The headers parser
-     * @return $this
+     * {@inheritDoc}
      */
     public function setHeadersParser(HeadersInterface $headersParser)
     {
@@ -39,9 +37,7 @@ class Request
     }
 
     /**
-     * Returns the object which will be used to parse request headers
-     * 
-     * @return HeadersInterface
+     * {@inheritDoc}
      */
     public function getHeadersParser()
     {
@@ -50,13 +46,9 @@ class Request
         }
         return $this->headerParser;
     }
-    
+
     /**
-     * Parses the raw request data
-     * 
-     * @param  string $request The request data
-     * @return WebRequest
-     * @throws \Headzoo\Web\Tools\Parsers\Exceptions\MalformedRequestException When the request is malformed and cannot be parsed
+     * {@inheritDoc}
      */
     public function parse($request)
     {
@@ -78,6 +70,7 @@ class Request
             "files"   => []
         ];
 
+        $options          = null;
         $headersParser    = $this->getHeadersParser();
         $data["headers"]  = $headersParser->parse($parts[0], $options);
         if (empty($data["headers"]["Host"])) {
