@@ -15,7 +15,7 @@ class HttpRequestParser
      * @return HttpRequest
      */
     public function parse($request)
-    {
+    {echo $request;
         // Normalizing line feeds in case of buggy browsers, and splitting the headers
         // from the body.
         $request = preg_replace('~(*BSR_ANYCRLF)\R~', "\r\n", $request);
@@ -47,15 +47,6 @@ class HttpRequestParser
                 "Malformed HTTP request at options."
             );
         }
-        
-        // The Host header must be next.
-        $data["host"] = array_shift($parts[0]);
-        if (substr($data["host"], 0, 5) != "Host:") {
-            throw new UnexpectedValueException(
-                "Malformed HTTP request at host."
-            );
-        }
-        $data["host"] = trim(explode(":", $data["host"], 2)[1]);
 
         // Parsing the headers, and normalizing the header names to follow the
         // format "Camel-Case", eg "Content-Type".
@@ -64,7 +55,12 @@ class HttpRequestParser
             $name  = str_replace("-", " ", $name);
             $name  = ucwords(strtolower($name));
             $name  = str_replace(" ", "-", $name);
-            $data["headers"][$name] = trim($value);
+            $value = trim($value);
+            if ("Host" == $name) {
+                $data["host"] = $value;
+            } else {
+                $data["headers"][$name] = $value;
+            }
         }
         
         return new HttpRequest($data);
