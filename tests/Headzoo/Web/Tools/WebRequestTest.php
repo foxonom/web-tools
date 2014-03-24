@@ -1,6 +1,5 @@
 <?php
 use Headzoo\Web\Tools\WebRequest;
-use Headzoo\Web\Tools\WebServer;
 
 class WebRequestTest
     extends PHPUnit_Framework_TestCase
