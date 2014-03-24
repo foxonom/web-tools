@@ -1,6 +1,5 @@
 <?php
 namespace Headzoo\Web\Tools;
-use UnexpectedValueException;
 
 /**
  * Parses client requests into individual components.
@@ -8,20 +7,60 @@ use UnexpectedValueException;
 class HttpRequestParser
 {
     /**
-     * Parses the request data
+     * Used to parse the request headers
+     * @var HttpHeadersParserInterface
+     */
+    protected $headerParser;
+
+    /**
+     * Constructor
      * 
-     * @param string $request The request data
-     * @throws UnexpectedValueException
+     * @param HttpHeadersParserInterface $headersParser Object used to parse request headers
+     */
+    public function __construct(HttpHeadersParserInterface $headersParser = null)
+    {
+        if (null !== $headersParser) {
+            $this->setHeadersParser($headersParser);
+        }
+    }
+
+    /**
+     * Sets the object which will be used to parse request headers
+     * 
+     * @param  HttpHeadersParserInterface $headersParser The headers parser
+     * @return $this
+     */
+    public function setHeadersParser(HttpHeadersParserInterface $headersParser)
+    {
+        $this->headerParser = $headersParser;
+        return $this;
+    }
+
+    /**
+     * Returns the object which will be used to parse request headers
+     * 
+     * @return HttpHeadersParserInterface
+     */
+    public function getHeadersParser()
+    {
+        if (null === $this->headerParser) {
+            $this->headerParser = new HttpHeadersParser();
+        }
+        return $this->headerParser;
+    }
+    
+    /**
+     * Parses the raw request data
+     * 
+     * @param  string $request The request data
      * @return HttpRequest
+     * @throws Exceptions\MalformedRequestException When the request is malformed and cannot be parsed
      */
     public function parse($request)
-    {echo $request;
-        // Normalizing line feeds in case of buggy browsers, and splitting the headers
-        // from the body.
-        $request = preg_replace('~(*BSR_ANYCRLF)\R~', "\r\n", $request);
-        $parts   = explode("\r\n\r\n", $request, 2);
+    {
+        $parts = preg_split("/\\R\\R/", $request, 2);
         if (count($parts) < 2) {
-            throw new UnexpectedValueException(
+            throw new Exceptions\MalformedRequestException(
                 "Malformed HTTP request at headers and body."
             );
         }
@@ -37,35 +76,37 @@ class HttpRequestParser
             "files"   => []
         ];
 
-        // Splitting up the headers, the first header must be the options, which must
-        // be well formatted, eg "GET / HTTP/1.1".
-        $parts[0]         = preg_split("/(\\r\\n)/", $parts[0]);
-        $options          = explode(" ", array_shift($parts[0]), 3);
+        $headersParser    = $this->getHeadersParser();
+        $data["headers"]  = $headersParser->parse($parts[0], $options);
+        if (empty($data["headers"]["Host"])) {
+            throw new Exceptions\MalformedRequestException(
+                "Malformed HTTP request at host."
+            );
+        }
+        
+        $data["host"]     = $data["headers"]["Host"];
+        $options          = explode(" ", $options, 3);  
         $data["method"]   = array_shift($options);
         $data["path"]     = array_shift($options);
         $data["version"]  = array_shift($options);
-        if ("GET" != $data["method"] && "POST" != $data["method"]) {
-            throw new UnexpectedValueException(
+        if (empty($data["method"]) || empty($data["path"]) || empty($data["version"])) {
+            throw new Exceptions\MalformedRequestException(
                 "Malformed HTTP request at options."
             );
         }
-
-        // Parsing the headers, and normalizing the header names to follow the
-        // format "Camel-Case", eg "Content-Type".
-        foreach($parts[0] as $header) {
-            list($name, $value) = preg_split("/:\\S*/", $header, 2);
-            $name  = str_replace("-", " ", $name);
-            $name  = ucwords(strtolower($name));
-            $name  = str_replace(" ", "-", $name);
-            $value = trim($value);
-            if ("Host" == $name) {
-                $data["host"] = $value;
-            } else {
-                $data["headers"][$name] = $value;
+        
+        if (HttpMethods::POST === $data["method"]) {
+            $data = $this->parsePostBody($data);
+        } else {
+            $parts = parse_url($data["path"]);
+            if (!empty($parts["path"])) {
+                $data["path"] = $parts["path"];
+            }
+            if (!empty($parts["query"])) {
+                parse_str($parts["query"], $data["params"]);
             }
         }
         
-        $data = $this->parseBody($data);
         return new HttpRequest($data);
     }
 
@@ -75,7 +116,7 @@ class HttpRequestParser
      * @param  array $data The request data
      * @return array
      */
-    protected function parseBody($data)
+    protected function parsePostBody($data)
     {
         if (!empty($data["body"]) && !empty($data["headers"]["Content-Type"])) {
             $matched = preg_match("/boundary=(.*)$/", $data["headers"]["Content-Type"], $matches);
