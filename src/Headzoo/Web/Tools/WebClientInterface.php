@@ -8,16 +8,6 @@ use InvalidArgumentException;
 interface WebClientInterface
 {
     /**
-     * Get request method
-     */
-    const METHOD_GET = "GET";
-
-    /**
-     * Post request method
-     */
-    const METHOD_POST = "POST";
-
-    /**
      * The default user agent
      */
     const DEFAULT_USER_AGENT = "headzoo/web-tools";
@@ -34,11 +24,11 @@ interface WebClientInterface
     /**
      * Sets the request method
      * 
-     * Should be one of WebClientInterface::METHOD_GET or WebClientInterface::METHOD_POST.
+     * Should be one of HttpMethods constants.
      * 
      * @param  string $method The request method
      * @return mixed
-     * @throws InvalidArgumentException If $method is not one of the METHOD constants
+     * @throws InvalidArgumentException If $method is not one of the HttpMethods constants
      */
     public function setMethod($method);
 
@@ -129,7 +119,56 @@ interface WebClientInterface
     /**
      * Returns the status code returned by the server
      *
+     * The status code will be 0 if the request fails.
+     * 
      * @return int
      */
     public function getStatusCode();
+
+    /**
+     * Returns the headers that were sent with the request
+     * 
+     * The headers will not be available if the request fails, and this method will return
+     * an empty array.
+     * 
+     * @return array
+     */
+    public function getRequestHeaders();
+
+    /**
+     * Returns information about the last request
+     * 
+     * The return value *may* contain one or more of the following keys:
+     * ```
+     * "url"
+     * "content_type"
+     * "http_code"
+     * "header_size"
+     * "request_size"
+     * "filetime"
+     * "ssl_verify_result"
+     * "redirect_count"
+     * "total_time"
+     * "namelookup_time"
+     * "connect_time"
+     * "pretransfer_time"
+     * "size_upload"
+     * "size_download"
+     * "speed_download"
+     * "speed_upload"
+     * "download_content_length"
+     * "upload_content_length"
+     * "starttransfer_time"
+     * "redirect_time"
+     * "redirect_url"
+     * "primary_ip"
+     * "certinfo"
+     * "primary_port"
+     * "local_ip"
+     * "local_port"
+     * ```
+     * 
+     * @return array
+     */
+    public function getRequestInfo();
 } 
