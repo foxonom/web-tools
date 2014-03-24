@@ -1,5 +1,6 @@
 <?php
-namespace Headzoo\Web\Tools;
+namespace Headzoo\Web\Tools\Parsers;
+use Headzoo\Web\Tools\HttpMethods;
 
 /**
  * Parses request/response headers into an array.

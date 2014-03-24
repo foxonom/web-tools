@@ -1,12 +1,12 @@
 <?php
-use Headzoo\Web\Tools\HttpRequestParser;
+use Headzoo\Web\Tools\Parsers\HttpRequestParser;
 
 class HttpRequestParserTest
     extends PHPUnit_Framework_TestCase
 {
     /**
      * The test fixture
-     * @var HttpRequestParser
+     * @var \Headzoo\Web\Tools\Parsers\HttpRequestParser
      */
     protected $parser;
 
@@ -20,7 +20,7 @@ class HttpRequestParserTest
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     * @covers Headzoo\Web\Tools\Parsers\HttpRequestParser::parse
      */
     public function testParse_Get()
     {
@@ -73,7 +73,7 @@ REQ;
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     * @covers Headzoo\Web\Tools\Parsers\HttpRequestParser::parse
      */
     public function testParse_Post()
     {
@@ -110,7 +110,7 @@ REQ;
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     * @covers Headzoo\Web\Tools\Parsers\HttpRequestParser::parse
      * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
      */
     public function testParse_Get_Malformed_Body()
@@ -124,7 +124,7 @@ REQ;
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     * @covers Headzoo\Web\Tools\Parsers\HttpRequestParser::parse
      * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
      */
     public function testParse_Get_Malformed_Host()
@@ -137,7 +137,7 @@ REQ;
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     * @covers Headzoo\Web\Tools\Parsers\HttpRequestParser::parse
      * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
      */
     public function testParse_Get_Malformed_Path()

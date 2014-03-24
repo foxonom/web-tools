@@ -1,5 +1,5 @@
 <?php
-namespace Headzoo\Web\Tools;
+namespace Headzoo\Web\Tools\Parsers;
 
 /**
  * Interface for classes which can parse raw request/response http headers.

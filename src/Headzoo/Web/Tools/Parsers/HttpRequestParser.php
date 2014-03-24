@@ -1,5 +1,8 @@
 <?php
-namespace Headzoo\Web\Tools;
+namespace Headzoo\Web\Tools\Parsers;
+use Headzoo\Web\Tools\Exceptions;
+use Headzoo\Web\Tools\HttpMethods;
+use Headzoo\Web\Tools\HttpRequest;
 
 /**
  * Parses client requests into individual components.
