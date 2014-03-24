@@ -3,7 +3,7 @@ namespace Headzoo\Web\Tools\Parsers;
 use Headzoo\Web\Tools\HttpMethods;
 
 /**
- * Parses request/response headers into an array.
+ * Parses raw request/response headers into an array.
  */
 class Headers
     implements HeadersInterface
