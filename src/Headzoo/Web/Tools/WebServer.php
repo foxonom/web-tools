@@ -25,7 +25,7 @@ class WebServer
 
     /**
      * Used to parse requests
-     * @var Parsers\HttpRequestParser
+     * @var Parsers\Request
      */
     private $httpParser;
     
@@ -76,10 +76,10 @@ class WebServer
     /**
      * Sets the object used to parse http requests
      * 
-     * @param  Parsers\HttpRequestParser $httpParser The parser
+     * @param  Parsers\Request $httpParser The parser
      * @return $this
      */
-    public function setHttpParser(Parsers\HttpRequestParser $httpParser)
+    public function setHttpParser(Parsers\Request $httpParser)
     {
         $this->httpParser = $httpParser;
         return $this;
@@ -88,12 +88,12 @@ class WebServer
     /**
      * Returns the object that will be used to parse http request
      * 
-     * @return Parsers\HttpRequestParser
+     * @return Parsers\Request
      */
     public function getHttpParser()
     {
         if (!$this->httpParser) {
-            $this->httpParser = new Parsers\HttpRequestParser();
+            $this->httpParser = new Parsers\Request();
         }
         return $this->httpParser;
     }

@@ -7,12 +7,11 @@ use Headzoo\Web\Tools\HttpRequest;
 /**
  * Parses client requests into individual components.
  */
-class HttpRequestParser
+class Request
 {
     /**
      * Used to parse the request headers
-     * 
-*@var HeadersInterface
+     * @var HeadersInterface
      */
     protected $headerParser;
 
