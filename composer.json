@@ -4,7 +4,6 @@
     "type": "library",
     "license": "MIT",
     "keywords": ["php", "web", "http"],
-    "version": "0.1",
     "authors": [
         {
             "name": "headzoo",
