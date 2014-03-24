@@ -22,10 +22,10 @@ class HttpRequestParserTest
     /**
      * @covers Headzoo\Web\Tools\HttpRequestParser::parse
      */
-    public function testParse()
+    public function testParse_Get()
     {
         $request = <<< REQ
-GET / HTTP/1.1
+GET /index.html?name=Sean&job=programmer HTTP/1.1
 Host: localhost:8888
 Connection: keep-alive
 Cache-Control: max-age=0
@@ -51,7 +51,7 @@ REQ;
             $request->getVersion()
         );
         $this->assertEquals(
-            "/",
+            "/index.html",
             $request->getPath()
         );
         $this->assertEquals(
@@ -66,7 +66,17 @@ REQ;
             "Cache-Control",
             $request->getHeaders()
         );
+        $this->assertEquals(
+            ["name" => "Sean", "job" => "programmer"],
+            $request->getParams()
+        );
+    }
 
+    /**
+     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     */
+    public function testParse_Post()
+    {
         $request = <<< REQ
 POST /index.html HTTP/1.1
 Host: localhost:8888
@@ -97,5 +107,48 @@ REQ;
             ["name" => "Sean", "job" => "programmer"],
             $request->getParams()
         );
+    }
+
+    /**
+     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
+     */
+    public function testParse_Get_Malformed_Body()
+    {
+        $request = <<< REQ
+GET / HTTP/1.1
+Host: localhost:8888
+Connection: keep-alive
+REQ;
+        $this->parser->parse($request);
+    }
+
+    /**
+     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
+     */
+    public function testParse_Get_Malformed_Host()
+    {
+        $request = <<< REQ
+GET / HTTP/1.1
+Connection: keep-alive
+REQ;
+        $this->parser->parse($request);
+    }
+
+    /**
+     * @covers Headzoo\Web\Tools\HttpRequestParser::parse
+     * @expectedException Headzoo\Web\Tools\Exceptions\MalformedRequestException
+     */
+    public function testParse_Get_Malformed_Path()
+    {
+        $request = <<< REQ
+GET HTTP/1.1
+Host: localhost:8888
+Connection: keep-alive
+
+
+REQ;
+        $this->parser->parse($request);
     }
 }
