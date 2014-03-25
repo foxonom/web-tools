@@ -4,6 +4,14 @@ use Headzoo\Web\Tools\AbstractHttp;
 class HttpTestClass
     extends AbstractHttp
 {
+    protected $values = [
+        "time"    => null,
+        "version" => null,
+        "method"  => null,
+        "body"    => null,
+        "code"    => null
+    ];
+
     public function __construct() {}
     public function setRequired(array $required)
     {
@@ -23,7 +31,7 @@ class HttpTest
             "time"    => time(),
             "version" => "HTTP/1.1",
             "method"  => "GET",
-            "body"    => null
+            "body"    => "Hello, World!"
         ];
         $required = [
             "time",
@@ -35,6 +43,12 @@ class HttpTest
         $this->assertSame(
             $http,
             $http->setValues($values)
+        );
+        
+        $values["code"] = null;
+        $this->assertEquals(
+            $values,
+            $http->getValues()
         );
     }
 

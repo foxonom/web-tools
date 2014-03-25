@@ -66,6 +66,16 @@ abstract class AbstractHttp
     }
 
     /**
+     * Returns the request/response values as an array
+     * 
+     * @return array
+     */
+    public function getValues()
+    {
+        return $this->values;
+    }
+
+    /**
      * Sets the request/response values
      * 
      * @param  array $values The request/response values
@@ -74,7 +84,7 @@ abstract class AbstractHttp
     public function setValues(array $values)
     {
         $this->getValidator()->validateRequired($values, $this->required);
-        $this->values = $values;
+        $this->values = array_merge($this->values, $values);
         
         return $this;
     }
