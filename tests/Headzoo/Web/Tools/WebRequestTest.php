@@ -1,16 +1,16 @@
 <?php
-use Headzoo\Web\Tools\HttpRequest;
+use Headzoo\Web\Tools\WebRequest;
 
-class HttpRequestTest
+class WebRequestTest
     extends PHPUnit_Framework_TestCase
 {
-    protected $data;
+    protected $values;
     
     /**
      * The test fixture
-     * @var HttpRequest
+     * @var WebRequest
      */
-    protected $fixture;
+    protected $request;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -18,7 +18,8 @@ class HttpRequestTest
      */
     protected function setUp()
     {
-        $this->data = [
+        $this->values = [
+            "time"    => time(),
             "version" => "HTTP/1.1",
             "method"  => "GET",
             "host"    => "localhost:8888",
@@ -29,12 +30,12 @@ class HttpRequestTest
             ],
             "body"    => null
         ];
-        $this->fixture = new HttpRequest($this->data);
+        $this->request = new WebRequest($this->values);
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::__construct
-     * @expectedException InvalidArgumentException
+     * @covers Headzoo\Web\Tools\WebRequest::__construct
+     * @expectedException Headzoo\Utilities\Exceptions\ValidationFailedException
      */
     public function testConstruct_InvalidArgumentException()
     {
@@ -50,72 +51,72 @@ class HttpRequestTest
             "params"  => [],
             "files"   => []
         ];
-        new HttpRequest($data);
+        new WebRequest($data);
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getVersion
+     * @covers Headzoo\Web\Tools\WebRequest::getVersion
      */
     public function testGetVersion()
     {
         $this->assertEquals(
-            $this->data["version"],
-            $this->fixture->getVersion()
+            $this->values["version"],
+            $this->request->getVersion()
         );
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getMethod
+     * @covers Headzoo\Web\Tools\WebRequest::getMethod
      */
     public function testGetMethod()
     {
         $this->assertEquals(
-            $this->data["method"],
-            $this->fixture->getMethod()
+            $this->values["method"],
+            $this->request->getMethod()
         );
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getHost
+     * @covers Headzoo\Web\Tools\WebRequest::getHost
      */
     public function testGetHost()
     {
         $this->assertEquals(
-            $this->data["host"],
-            $this->fixture->getHost()
+            $this->values["host"],
+            $this->request->getHost()
         );
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getPath
+     * @covers Headzoo\Web\Tools\WebRequest::getPath
      */
     public function testGetPath()
     {
         $this->assertEquals(
-            $this->data["path"],
-            $this->fixture->getPath()
+            $this->values["path"],
+            $this->request->getPath()
         );
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getHeaders
+     * @covers Headzoo\Web\Tools\WebRequest::getHeaders
      */
     public function testGetHeaders()
     {
         $this->assertEquals(
-            $this->data["headers"],
-            $this->fixture->getHeaders()
+            $this->values["headers"],
+            $this->request->getHeaders()
         );
     }
 
     /**
-     * @covers Headzoo\Web\Tools\HttpRequest::getBody
+     * @covers Headzoo\Web\Tools\WebRequest::getBody
      */
     public function testGetBody()
     {
         $this->assertEquals(
-            $this->data["body"],
-            $this->fixture->getBody()
+            $this->values["body"],
+            $this->request->getBody()
         );
     }
 }

@@ -25,7 +25,7 @@ class WebServer
 
     /**
      * Used to parse requests
-     * @var HttpRequestParser
+     * @var Parsers\RequestInterface
      */
     private $httpParser;
     
@@ -76,10 +76,10 @@ class WebServer
     /**
      * Sets the object used to parse http requests
      * 
-     * @param  HttpRequestParser $httpParser The parser
+     * @param  Parsers\RequestInterface $httpParser The parser
      * @return $this
      */
-    public function setHttpParser(HttpRequestParser $httpParser)
+    public function setHttpParser(Parsers\RequestInterface $httpParser)
     {
         $this->httpParser = $httpParser;
         return $this;
@@ -88,12 +88,12 @@ class WebServer
     /**
      * Returns the object that will be used to parse http request
      * 
-     * @return HttpRequestParser
+     * @return Parsers\RequestInterface
      */
     public function getHttpParser()
     {
         if (!$this->httpParser) {
-            $this->httpParser = new HttpRequestParser();
+            $this->httpParser = new Parsers\Request();
         }
         return $this->httpParser;
     }
@@ -223,12 +223,12 @@ class WebServer
      * 
      * Returns the number of bytes sent.
      * 
-     * @param  HttpRequest $request The http request
+     * @param  WebRequest $request The http request
      * @param  int $code The http status code to sent
      * @param  string $message The http status message to send
      * @return int
      */
-    protected function sendResponseHeadersToClient(HttpRequest $request, $code, $message)
+    protected function sendResponseHeadersToClient(WebRequest $request, $code, $message)
     {
         $headers = [
             "Date"       => gmdate("D, d M Y H:i:s T"),
@@ -283,11 +283,11 @@ class WebServer
     /**
      * Returns the data for the requested file
      * 
-     * @param  HttpRequest $request The http request
+     * @param  WebRequest $request The http request
      * @return string
      * @throws Exceptions\HttpStatusError
      */
-    protected function getFile(HttpRequest $request)
+    protected function getFile(WebRequest $request)
     {
         $path = realpath($this->dirRoot . DIRECTORY_SEPARATOR . $request->getPath());
         if (false === $path) {

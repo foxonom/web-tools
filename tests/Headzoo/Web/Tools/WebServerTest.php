@@ -1,12 +1,12 @@
 <?php
 use Headzoo\Web\Tools\WebServer;
-use Headzoo\Web\Tools\HttpRequest;
+use Headzoo\Web\Tools\WebRequest;
 
 class WebServerTest
     extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var HttpRequest
+     * @var WebRequest
      */
     public $request = null;
     
@@ -30,7 +30,7 @@ class WebServerTest
      */
     public function testStart()
     {
-        $this->server->setCallback(function(HttpRequest $request) {
+        $this->server->setCallback(function(WebRequest $request) {
             $this->request = $request;
             return "Hello, World!";
         });

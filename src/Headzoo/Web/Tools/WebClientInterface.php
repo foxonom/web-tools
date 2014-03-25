@@ -1,6 +1,6 @@
 <?php
 namespace Headzoo\Web\Tools;
-use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Interface for classes which make http requests.
@@ -8,37 +8,75 @@ use InvalidArgumentException;
 interface WebClientInterface
 {
     /**
-     * Get request method
-     */
-    const METHOD_GET = "GET";
-
-    /**
-     * Post request method
-     */
-    const METHOD_POST = "POST";
-
-    /**
      * The default user agent
      */
     const DEFAULT_USER_AGENT = "headzoo/web-tools";
-    
+
     /**
-     * Sends the request and returns the response
-     *
-     * @param  string $url The url to request
-     * @return string
-     * @throws Exceptions\WebException If the request generates an error
+     * The default content type
      */
-    public function request($url);
+    const DEFAULT_CONTENT_TYPE = "text/plain";
+
+    /**
+     * The default log message format
+     */
+    const DEFAULT_LOG_FORMAT = "[{http_code}] {method} {url}";
+
+    /**
+     * Sets the object which will be used to parse raw request headers
+     *
+     * @param  Parsers\HeadersInterface $headersParser The raw headers parser
+     * @return $this
+     */
+    public function setHeadersParser(Parsers\HeadersInterface $headersParser);
+
+    /**
+     * Returns the object which will be used to parse raw request headers
+     *
+     * @return Parsers\HeadersInterface
+     */
+    public function getHeadersParser();
+
+    /**
+     * Sets the object which will be used to create raw http headers
+     *
+     * @param  Builders\HeadersInterface $headersBuilder The raw headers builder
+     * @return $this
+     */
+    public function setHeadersBuilder(Builders\HeadersInterface $headersBuilder);
+
+    /**
+     * Returns the object which will be used to create raw request headers
+     *
+     * @return Builders\HeadersInterface
+     */
+    public function getHeadersBuilder();
+
+    /**
+     * Sets a logger instance and log format
+     *
+     * Once set, requests and errors will be logged using this logger. The log format is the string
+     * actually written to the log. Place holders in the format of "{name}" will be replaced
+     * with values from the WebClientInterface::getInformation() array. For example the
+     * format "{http_code} {method} {url}" results in a log being written like "200 GET http://site.com".
+     * 
+     * See the WebClientInterface::getInformation() for information on which values may be used
+     * as place holders.
+     *
+     * @param  LoggerInterface $logger    The logger
+     * @param  string          $logFormat The log message format
+     * @return $this
+     */
+    public function setLogger(LoggerInterface $logger, $logFormat = self::DEFAULT_LOG_FORMAT);
 
     /**
      * Sets the request method
      * 
-     * Should be one of WebClientInterface::METHOD_GET or WebClientInterface::METHOD_POST.
+     * Should be one of HttpMethods constants.
      * 
      * @param  string $method The request method
      * @return mixed
-     * @throws InvalidArgumentException If $method is not one of the METHOD constants
+     * @throws Exceptions\InvalidArgumentException If $method is not one of the HttpMethods constants
      */
     public function setMethod($method);
 
@@ -127,9 +165,80 @@ interface WebClientInterface
     public function setBasicAuth($user, $pass);
 
     /**
-     * Returns the status code returned by the server
+     * Sends a request to an http server and returns the response
      *
-     * @return int
+     * @param  string $url The server url
+     * @return WebResponse
+     * @throws Exceptions\WebException If the request generates an error
      */
-    public function getStatusCode();
+    public function request($url);
+
+    /**
+     * Perform an http GET request on the given url
+     *
+     * This method is a shortcut from writing the following code:
+     * ```php
+     * $web = new WebClient();
+     * $web->setMethod(HttpMethods::GET);
+     * $web->request($url);
+     * ```
+     *
+     * @param  string $url The server url
+     * @return WebResponse
+     */
+    public function get($url);
+
+    /**
+     * Perform an http POST request on the given url
+     *
+     * This method is a shortcut from writing the following code:
+     * ```php
+     * $web = new WebClient();
+     * $web->setMethod(HttpMethods::POST);
+     * $web->setData($data);
+     * $web->request($url);
+     * ```
+     *
+     * @param  string $url  The server url
+     * @param  mixed  $data The post data
+     * @return WebResponse
+     */
+    public function post($url, $data);
+    
+    /**
+     * Returns useful debugging information about the last request made
+     * 
+     * The return value *may* contain one or more of the following keys:
+     * ```
+     * "url"
+     * "content_type"
+     * "http_code"
+     * "header_size"
+     * "request_size"
+     * "filetime"
+     * "ssl_verify_result"
+     * "redirect_count"
+     * "total_time"
+     * "namelookup_time"
+     * "connect_time"
+     * "pretransfer_time"
+     * "size_upload"
+     * "size_download"
+     * "speed_download"
+     * "speed_upload"
+     * "download_content_length"
+     * "upload_content_length"
+     * "starttransfer_time"
+     * "redirect_time"
+     * "redirect_url"
+     * "primary_ip"
+     * "certinfo"
+     * "primary_port"
+     * "local_ip"
+     * "local_port"
+     * ```
+     * 
+     * @return array
+     */
+    public function getInformation();
 } 
