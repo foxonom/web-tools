@@ -45,15 +45,6 @@ interface WebClientInterface
      * @return Builders\HeadersInterface
      */
     public function getHeadersBuilder();
-    
-    /**
-     * Sends the request and returns the response
-     *
-     * @param  string $url The url to request
-     * @return string
-     * @throws Exceptions\WebException If the request generates an error
-     */
-    public function request($url);
 
     /**
      * Sets the request method
@@ -151,25 +142,6 @@ interface WebClientInterface
     public function setBasicAuth($user, $pass);
 
     /**
-     * Returns the status code returned by the server
-     *
-     * The status code will be 0 if the request fails.
-     * 
-     * @return int
-     */
-    public function getStatusCode();
-
-    /**
-     * Returns the headers that were sent with the request
-     * 
-     * The headers will not be available if the request fails, and this method will return
-     * an empty array.
-     * 
-     * @return array
-     */
-    public function getRequestHeaders();
-
-    /**
      * Returns information about the last request
      * 
      * The return value *may* contain one or more of the following keys:
@@ -205,4 +177,13 @@ interface WebClientInterface
      * @return array
      */
     public function getInformation();
+
+    /**
+     * Sends a request to an http server and returns the response
+     *
+     * @param  string $url The server url
+     * @return WebResponse
+     * @throws Exceptions\WebException If the request generates an error
+     */
+    public function request($url);
 } 
