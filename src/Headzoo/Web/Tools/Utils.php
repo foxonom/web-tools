@@ -102,4 +102,25 @@ class Utils
         
         return $headerName;
     }
+
+    /**
+     * Appends the query string to the url
+     * 
+     * Used when you need to append a query string to a url which may already have
+     * a query string. The $query argument be either a string, or an array.
+     * 
+     * @param  string       $url   The base rul
+     * @param  string|array $query The query string to append
+     * @return string
+     */
+    public static function appendUrlQuery($url, $query)
+    {
+        if (is_array($query)) {
+            $query = http_build_query($query);
+        }
+        $query  = ltrim($query, "?&");
+        $joiner = strpos($url, "?") === false ? "?" : "&";
+        
+        return "{$url}{$joiner}{$query}";
+    }
 } 
