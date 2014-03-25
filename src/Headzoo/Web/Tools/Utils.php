@@ -70,7 +70,7 @@ class Utils
      * ```
      * 
      * @param  string|array $headerName The header name or array of header names
-     * @param  bool         $stripX     Should X- prefixes be stripped?
+     * @param  bool         $stripX     Should the experimental "X-" prefix be removed?
      * @return string
      * @throws InvalidArgumentException When the header name cannot be normalized
      */
