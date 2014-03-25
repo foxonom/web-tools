@@ -80,7 +80,7 @@ RAW;
 
     /**
      * @covers Headzoo\Web\Tools\Builders\Headers::build
-     * @expectedException Headzoo\Web\Tools\Builders\Exceptions\BuildErrorException
+     * @expectedException Headzoo\Web\Tools\Builders\Exceptions\BuildException
      */
     public function testBuild_InvalidArgument()
     {

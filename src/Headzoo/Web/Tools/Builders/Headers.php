@@ -54,7 +54,7 @@ class Headers
     public function build(array $headers)
     {
         if (count($headers) > self::MAX_HEADERS) {
-            throw new Exceptions\BuildErrorException(
+            throw new Exceptions\BuildException(
                 sprintf(
                     "Number of header fields exceeds the %d max number.",
                     self::MAX_HEADERS

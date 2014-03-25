@@ -65,7 +65,7 @@ interface HeadersInterface
      * 
      * @param  array $headers The header names and values
      * @return string
-     * @throws Exceptions\BuildErrorException If the number of headers exceeds the value of HeadersInterface::MAX_HEADERS
+     * @throws Exceptions\BuildException If the number of headers exceeds the value of HeadersInterface::MAX_HEADERS
      */
     public function build(array $headers);
 
