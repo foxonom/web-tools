@@ -1,6 +1,5 @@
 <?php
 namespace Headzoo\Web\Tools;
-use InvalidArgumentException;
 
 /**
  * Interface for classes which make http requests.
@@ -33,7 +32,7 @@ interface WebClientInterface
      * 
      * @param  string $method The request method
      * @return mixed
-     * @throws InvalidArgumentException If $method is not one of the HttpMethods constants
+     * @throws Exceptions\InvalidArgumentException If $method is not one of the HttpMethods constants
      */
     public function setMethod($method);
 

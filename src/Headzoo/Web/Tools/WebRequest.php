@@ -1,6 +1,5 @@
 <?php
 namespace Headzoo\Web\Tools;
-use InvalidArgumentException;
 
 /**
  * Represents a client http request.
@@ -26,13 +25,13 @@ class WebRequest
      * Constructor
      * 
      * @param array $data The request data
-     * @throws InvalidArgumentException When any of the request values are empty except the body, params, and files
+     * @throws Exceptions\InvalidArgumentException When any of the request values are empty except the body, params, and files
      */
     public function __construct(array $data)
     {
         foreach($this->data as $key => $value) {
             if (empty($data[$key]) && "body" !== $key && "params" !== $key && "files" !== $key) {
-                throw new InvalidArgumentException(
+                throw new Exceptions\InvalidArgumentException(
                     "The data value for key '{$key}' cannot be empty."
                 );
             }

@@ -1,7 +1,6 @@
 <?php
 namespace Headzoo\Web\Tools;
 use Headzoo\Utilities\Arrays;
-use InvalidArgumentException;
 
 /**
  * Contains static methods used by classes in this namespace.
@@ -72,7 +71,7 @@ class Utils
      * @param  string|array $headerName The header name or array of header names
      * @param  bool         $stripX     Should the experimental "X-" prefix be removed?
      * @return string
-     * @throws InvalidArgumentException When the header name cannot be normalized
+     * @throws Exceptions\InvalidArgumentException When the header name cannot be normalized
      */
     public static function normalizeHeaderName($headerName, $stripX = false)
     {
@@ -83,7 +82,7 @@ class Utils
         } else {
             $headerName = trim((string)$headerName, " \t:");
             if (count(explode(":", $headerName)) > 1 || preg_match("/[^\\w\\s-]/", $headerName)) {
-                throw new InvalidArgumentException(
+                throw new Exceptions\InvalidArgumentException(
                     "String '{$headerName}' cannot be normalized because of bad formatting."
                 );
             }

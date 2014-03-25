@@ -34,7 +34,7 @@ class WebRequestTest
 
     /**
      * @covers Headzoo\Web\Tools\WebRequest::__construct
-     * @expectedException InvalidArgumentException
+     * @expectedException Headzoo\Web\Tools\Exceptions\InvalidArgumentException
      */
     public function testConstruct_InvalidArgumentException()
     {

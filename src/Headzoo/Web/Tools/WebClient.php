@@ -1,7 +1,6 @@
 <?php
 namespace Headzoo\Web\Tools;
 use Headzoo\Utilities\Complete;
-use InvalidArgumentException;
 
 /**
  * Used to make http requests.
@@ -134,7 +133,7 @@ class WebClient
     public function setMethod($method)
     {
         if (!in_array($method, HttpMethods::getValues())) {
-            throw new InvalidArgumentException(
+            throw new Exceptions\InvalidArgumentException(
                 "Invalid request method."
             );
         }

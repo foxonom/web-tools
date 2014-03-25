@@ -19,7 +19,7 @@ class UtilsTest
     /**
      * @covers Headzoo\Web\Tools\Utils::normalizeHeaderName
      * @dataProvider providerNormalizeHeaderName_InvalidArgument
-     * @expectedException InvalidArgumentException
+     * @expectedException Headzoo\Web\Tools\Exceptions\InvalidArgumentException
      */
     public function testNormalizeHeaderName_InvalidArgument($header)
     {
