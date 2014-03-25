@@ -4,7 +4,7 @@ use Headzoo\Web\Tools\WebRequest;
 class WebRequestTest
     extends PHPUnit_Framework_TestCase
 {
-    protected $data;
+    protected $values;
     
     /**
      * The test fixture
@@ -18,7 +18,7 @@ class WebRequestTest
      */
     protected function setUp()
     {
-        $this->data = [
+        $this->values = [
             "time"    => time(),
             "version" => "HTTP/1.1",
             "method"  => "GET",
@@ -30,7 +30,7 @@ class WebRequestTest
             ],
             "body"    => null
         ];
-        $this->request = new WebRequest($this->data);
+        $this->request = new WebRequest($this->values);
     }
 
     /**
@@ -60,7 +60,7 @@ class WebRequestTest
     public function testGetVersion()
     {
         $this->assertEquals(
-            $this->data["version"],
+            $this->values["version"],
             $this->request->getVersion()
         );
     }
@@ -71,7 +71,7 @@ class WebRequestTest
     public function testGetMethod()
     {
         $this->assertEquals(
-            $this->data["method"],
+            $this->values["method"],
             $this->request->getMethod()
         );
     }
@@ -82,7 +82,7 @@ class WebRequestTest
     public function testGetHost()
     {
         $this->assertEquals(
-            $this->data["host"],
+            $this->values["host"],
             $this->request->getHost()
         );
     }
@@ -93,7 +93,7 @@ class WebRequestTest
     public function testGetPath()
     {
         $this->assertEquals(
-            $this->data["path"],
+            $this->values["path"],
             $this->request->getPath()
         );
     }
@@ -104,7 +104,7 @@ class WebRequestTest
     public function testGetHeaders()
     {
         $this->assertEquals(
-            $this->data["headers"],
+            $this->values["headers"],
             $this->request->getHeaders()
         );
     }
@@ -115,7 +115,7 @@ class WebRequestTest
     public function testGetBody()
     {
         $this->assertEquals(
-            $this->data["body"],
+            $this->values["body"],
             $this->request->getBody()
         );
     }
