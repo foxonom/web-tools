@@ -206,6 +206,7 @@ class WebClient
         $this->prepareHeaders();
         $this->prepareData();
         $this->exec();
+        $this->complete->invoke();
         
         return new WebResponse($this->response);
     }
@@ -307,10 +308,6 @@ class WebClient
      */
     protected function prepareCurl()
     {
-        if ($this->complete) {
-            $this->complete = null;
-        }
-
         $this->curl = curl_init();
         $this->complete = Complete::factory(function() {
             if ($this->curl) {
