@@ -83,4 +83,23 @@ class UtilsTest
             ["Content^Type"]
         ];
     }
+
+    /**
+     * @covers Headzoo\Web\Tools\Utils::appendUrlQuery
+     */
+    public function testAppendUrlQuery()
+    {
+        $this->assertEquals(
+            "http://site.com?name=Sean&job=programmer",
+            Utils::appendUrlQuery("http://site.com", "name=Sean&job=programmer")
+        );
+        $this->assertEquals(
+            "http://site.com?action=list&name=Sean&job=programmer",
+            Utils::appendUrlQuery("http://site.com?action=list", "name=Sean&job=programmer")
+        );
+        $this->assertEquals(
+            "http://site.com?action=list&name=Sean&job=programmer",
+            Utils::appendUrlQuery("http://site.com?action=list", "?name=Sean&job=programmer")
+        );
+    }
 }
