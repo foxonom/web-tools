@@ -1,6 +1,8 @@
 <?php
 namespace Headzoo\Web\Tools;
 use Headzoo\Utilities\Complete;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 /**
  * Used to make http requests.
@@ -28,6 +30,18 @@ class WebClient
         CURLOPT_FOLLOWLOCATION  => true
     ];
 
+    /**
+     * Used to log messages
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * The logger message format
+     * @var string
+     */
+    private $logFormat;
+    
     /**
      * The url being requested
      * @var string
@@ -245,6 +259,17 @@ class WebClient
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function setLogger(LoggerInterface $logger, $logFormat = self::DEFAULT_LOG_FORMAT)
+    {
+        $this->logger    = $logger;
+        $this->logFormat = $logFormat;
+        
+        return $this;
+    }
+
+    /**
      * Validates the request values for correctness
      *
      * @throws Exceptions\WebException When an incorrect value is found
@@ -317,7 +342,7 @@ class WebClient
         }
         
         curl_setopt($this->curl, CURLOPT_USERAGENT, $this->userAgent);
-        if (!empty($headers)) {
+        if (!empty($this->headers)) {
             $headers = $this->getHeadersBuilder()->normalize($this->headers);
             curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
         }
@@ -330,7 +355,9 @@ class WebClient
     {
         curl_setopt($this->curl, CURLOPT_URL, $this->url);
         $response_text = curl_exec($this->curl);
-        $this->info = curl_getinfo($this->curl);
+        $this->info    = curl_getinfo($this->curl);
+        $this->logInformation();
+        
         if (false === $response_text) {
             throw new Exceptions\WebException(
                 curl_error($this->curl),
@@ -355,5 +382,19 @@ class WebClient
             $options
         );
         $this->response["version"] = explode(" ", $options, 3)[0];
+    }
+
+    /**
+     * Logs request information when logging is enabled
+     */
+    protected function logInformation()
+    {
+        if ($this->logger) {
+            $level = $this->info["http_code"] > 0 && $this->info["http_code"] < 400
+                ? LogLevel::INFO
+                : LogLevel::ERROR;
+            $this->info["method"] = $this->method;
+            $this->logger->log($level, $this->logFormat, $this->info);
+        }
     }
 } 

@@ -35,8 +35,7 @@ class WebClientTest
     protected function setUp()
     {
         $this->web = new WebClient();
-        $this->web->addHeader("X-Testing-Header", "Found");
-        $this->web->addHeader("X-Request-Type: unit-testing");
+        $this->web->addHeader("X-Testing-Ping: unit-testing");
     }
 
     /**
@@ -60,12 +59,8 @@ class WebClientTest
             );
             $headers = $this->response->getHeaders();
             $this->assertEquals(
-                "Howdy",
-                $headers["X-Test-Response"]
-            );
-            $this->assertEquals(
                 "unit-testing",
-                $headers["X-Request-Type"]
+                $headers["X-Testing-Pong"]
             );
         }
     }
@@ -76,10 +71,6 @@ class WebClientTest
     public function testRequest_Get()
     {
         $actual = $this->request();
-        $this->assertContains(
-            WebClient::DEFAULT_CONTENT_TYPE,
-            $actual["CONTENT_TYPE"]
-        );
         $this->assertEquals(
             parse_url(self::TEST_URL, PHP_URL_PATH),
             $actual["REQUEST_URI"]
@@ -91,20 +82,9 @@ class WebClientTest
      */
     public function testRequest_Get_Multi()
     {
-        $time = time();
-        $this->web->addHeader("X-Start-Time", $time);
-
         $this->request();
-        $this->assertEquals(
-            $time,
-            $this->response->getHeaders()["X-Start-Time"]
-        );
-
         $this->request("?action=list");
-        $this->assertEquals(
-            $time,
-            $this->response->getHeaders()["X-Start-Time"]
-        );
+        $this->request();
     }
 
     /**

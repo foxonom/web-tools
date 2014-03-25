@@ -1,5 +1,6 @@
 <?php
 namespace Headzoo\Web\Tools;
+use Psr\Log\LoggerInterface;
 
 /**
  * Interface for classes which make http requests.
@@ -15,6 +16,11 @@ interface WebClientInterface
      * The default content type
      */
     const DEFAULT_CONTENT_TYPE = "text/plain";
+
+    /**
+     * The default log message format
+     */
+    const DEFAULT_LOG_FORMAT = "[{http_code}] {method} {url}";
 
     /**
      * Sets the object which will be used to parse raw request headers
@@ -45,6 +51,23 @@ interface WebClientInterface
      * @return Builders\HeadersInterface
      */
     public function getHeadersBuilder();
+
+    /**
+     * Sets a logger instance and log format
+     *
+     * Once set, requests and errors will be logged using this logger. The log format is the string
+     * actually written to the log. Place holders in the format of "{name}" will be replaced
+     * with values from the WebClientInterface::getInformation() array. For example the
+     * format "{http_code} {method} {url}" results in a log being written like "200 GET http://site.com".
+     * 
+     * See the WebClientInterface::getInformation() for information on which values may be used
+     * as place holders.
+     *
+     * @param  LoggerInterface $logger    The logger
+     * @param  string          $logFormat The log message format
+     * @return $this
+     */
+    public function setLogger(LoggerInterface $logger, $logFormat = self::DEFAULT_LOG_FORMAT);
 
     /**
      * Sets the request method
