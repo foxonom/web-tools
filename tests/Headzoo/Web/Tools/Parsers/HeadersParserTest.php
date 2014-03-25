@@ -1,7 +1,7 @@
 <?php
 use Headzoo\Web\Tools\Parsers\Headers;
 
-class HeadersTest
+class HeadersParserTest
     extends PHPUnit_Framework_TestCase
 {
     /**

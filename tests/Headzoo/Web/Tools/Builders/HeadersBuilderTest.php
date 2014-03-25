@@ -1,7 +1,7 @@
 <?php
 use Headzoo\Web\Tools\Builders\Headers;
 
-class HeadersTest
+class HeadersBuilderTest
     extends PHPUnit_Framework_TestCase
 {
     /**
