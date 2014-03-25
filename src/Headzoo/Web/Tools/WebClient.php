@@ -84,11 +84,16 @@ class WebClient
     private $complete;
 
     /**
-     * Used to parse the request headers
-     * 
-*@var Parsers\HeadersInterface
+     * Used to parse raw http request headers
+     * @var Parsers\HeadersInterface
      */
-    private $headerParser;
+    private $headersParser;
+
+    /**
+     * Used to build raw http request headers
+     * @var Builders\HeadersInterface
+     */
+    private $headersBuilder;
 
     /**
      * Constructor
@@ -103,28 +108,43 @@ class WebClient
     }
 
     /**
-     * Sets the object which will be used to parse request headers
-     *
-     * @param  Parsers\HeadersInterface $headersParser The headers parser
-     * @return $this
+     * {@inheritDoc}
      */
     public function setHeadersParser(Parsers\HeadersInterface $headersParser)
     {
-        $this->headerParser = $headersParser;
+        $this->headersParser = $headersParser;
         return $this;
     }
 
     /**
-     * Returns the object which will be used to parse request headers
-     *
-     * @return Parsers\HeadersInterface
+     * {@inheritDoc}
      */
     public function getHeadersParser()
     {
-        if (null === $this->headerParser) {
-            $this->headerParser = new Parsers\Headers();
+        if (null === $this->headersParser) {
+            $this->headersParser = new Parsers\Headers();
         }
-        return $this->headerParser;
+        return $this->headersParser;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setHeadersBuilder(Builders\HeadersInterface $headersBuilder)
+    {
+        $this->headersBuilder = $headersBuilder;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getHeadersBuilder()
+    {
+        if (null === $this->headersBuilder) {
+            $this->headersBuilder = new Builders\Headers();
+        }
+        return $this->headersBuilder;
     }
 
     /**
@@ -211,7 +231,7 @@ class WebClient
     /**
      * {@inheritDoc}
      */
-    public function getRequestInfo()
+    public function getInformation()
     {
         return $this->requestInfo;
     }
@@ -222,9 +242,9 @@ class WebClient
     public function request($url)
     {
         $this->url = $url;
-        $this->prepareCurl();
-        $this->validateRequest();
-
+        $this->validate();
+        $this->prepare();
+        
         curl_setopt($this->curl, CURLOPT_URL, $this->url);
         $response = curl_exec($this->curl);
         $this->requestInfo = curl_getinfo($this->curl);
@@ -240,10 +260,11 @@ class WebClient
     }
     
     /**
-     * Prepares curl to make an http request using the class property values
+     * Prepares curl to make an http request
      */
-    protected function prepareCurl()
+    protected function prepare()
     {
+        // Errors happen when curl resources are reused.
         if (is_resource($this->curl)) {
             curl_close($this->curl);
             $this->curl = null;
@@ -277,9 +298,9 @@ class WebClient
         $this->prepareHeaders();
         $this->prepareData();
     }
-
+    
     /**
-     * Adds the data value to the get/post request
+     * Adds the data value to the curl request
      */
     protected function prepareData()
     {
@@ -299,7 +320,7 @@ class WebClient
     }
 
     /**
-     * Adds the headers to the request
+     * Adds the set headers to the curl request
      */
     protected function prepareHeaders()
     {
@@ -308,21 +329,19 @@ class WebClient
         if ($this->method === HttpMethods::POST && !empty($this->headers["Content-Type"])) {
             unset($this->headers["Content-Type"]);
         }
-        $headers = [];
-        foreach($this->headers as $name => $value) {
-            if (is_int($name)) {
-                $headers[] = $value;
-            } else {
-                $headers[] = "{$name}: {$value}";
-            }
-        }
         
+        $headers = $this->getHeadersBuilder()->normalize($this->headers);
         if (!empty($headers)) {
             curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
         }
     }
-    
-    protected function validateRequest()
+
+    /**
+     * Validates the request values for correctness
+     * 
+     * @throws Exceptions\WebException When an incorrect value is found
+     */
+    protected function validate()
     {
         if ($this->method === HttpMethods::POST && empty($this->data)) {
             throw new Exceptions\WebException(

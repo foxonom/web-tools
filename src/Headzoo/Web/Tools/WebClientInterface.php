@@ -15,6 +15,36 @@ interface WebClientInterface
      * The default content type
      */
     const DEFAULT_CONTENT_TYPE = "text/plain";
+
+    /**
+     * Sets the object which will be used to parse raw request headers
+     *
+     * @param  Parsers\HeadersInterface $headersParser The raw headers parser
+     * @return $this
+     */
+    public function setHeadersParser(Parsers\HeadersInterface $headersParser);
+
+    /**
+     * Returns the object which will be used to parse raw request headers
+     *
+     * @return Parsers\HeadersInterface
+     */
+    public function getHeadersParser();
+
+    /**
+     * Sets the object which will be used to create raw http headers
+     *
+     * @param  Builders\HeadersInterface $headersBuilder The raw headers builder
+     * @return $this
+     */
+    public function setHeadersBuilder(Builders\HeadersInterface $headersBuilder);
+
+    /**
+     * Returns the object which will be used to create raw request headers
+     *
+     * @return Builders\HeadersInterface
+     */
+    public function getHeadersBuilder();
     
     /**
      * Sends the request and returns the response
@@ -174,5 +204,5 @@ interface WebClientInterface
      * 
      * @return array
      */
-    public function getRequestInfo();
+    public function getInformation();
 } 
