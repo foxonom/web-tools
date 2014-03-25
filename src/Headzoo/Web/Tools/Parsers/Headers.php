@@ -1,6 +1,7 @@
 <?php
 namespace Headzoo\Web\Tools\Parsers;
 use Headzoo\Web\Tools\HttpMethods;
+use Headzoo\Web\Tools\Utils;
 
 /**
  * Parses raw request/response headers into an array.
@@ -26,11 +27,8 @@ class Headers
                 $options = $line;
             } else if (!empty($line)) {
                 list($name, $value) = preg_split("/:\\S*/", $line, 2);
-                $name  = str_replace("-", " ", $name);
-                $name  = ucwords(strtolower($name));
-                $name  = str_replace(" ", "-", $name);
-                $value = trim($value);
-                $parsed[$name] = $value;
+                $name = Utils::normalizeHeaderName($name);
+                $parsed[$name] = trim($value);
             }
         }
         
