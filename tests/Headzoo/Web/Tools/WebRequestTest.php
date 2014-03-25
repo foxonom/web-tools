@@ -10,7 +10,7 @@ class WebRequestTest
      * The test fixture
      * @var WebRequest
      */
-    protected $fixture;
+    protected $request;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -30,7 +30,7 @@ class WebRequestTest
             ],
             "body"    => null
         ];
-        $this->fixture = new WebRequest($this->data);
+        $this->request = new WebRequest($this->data);
     }
 
     /**
@@ -61,7 +61,7 @@ class WebRequestTest
     {
         $this->assertEquals(
             $this->data["version"],
-            $this->fixture->getVersion()
+            $this->request->getVersion()
         );
     }
 
@@ -72,7 +72,7 @@ class WebRequestTest
     {
         $this->assertEquals(
             $this->data["method"],
-            $this->fixture->getMethod()
+            $this->request->getMethod()
         );
     }
 
@@ -83,7 +83,7 @@ class WebRequestTest
     {
         $this->assertEquals(
             $this->data["host"],
-            $this->fixture->getHost()
+            $this->request->getHost()
         );
     }
 
@@ -94,7 +94,7 @@ class WebRequestTest
     {
         $this->assertEquals(
             $this->data["path"],
-            $this->fixture->getPath()
+            $this->request->getPath()
         );
     }
 
@@ -105,7 +105,7 @@ class WebRequestTest
     {
         $this->assertEquals(
             $this->data["headers"],
-            $this->fixture->getHeaders()
+            $this->request->getHeaders()
         );
     }
 
@@ -116,7 +116,7 @@ class WebRequestTest
     {
         $this->assertEquals(
             $this->data["body"],
-            $this->fixture->getBody()
+            $this->request->getBody()
         );
     }
 }
