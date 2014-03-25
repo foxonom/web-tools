@@ -60,6 +60,7 @@ class Request
         }
         
         $data = [
+            "time"    => time(),
             "method"  => null,
             "version" => null,
             "host"    => null,

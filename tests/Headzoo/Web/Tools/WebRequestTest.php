@@ -19,6 +19,7 @@ class WebRequestTest
     protected function setUp()
     {
         $this->data = [
+            "time"    => time(),
             "version" => "HTTP/1.1",
             "method"  => "GET",
             "host"    => "localhost:8888",

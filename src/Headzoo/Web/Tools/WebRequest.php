@@ -11,6 +11,7 @@ class WebRequest
      * @var array
      */
     protected $data = [
+        "time"    => null,
         "method"  => null,
         "version" => null,
         "host"    => null,
@@ -24,7 +25,7 @@ class WebRequest
     /**
      * Constructor
      * 
-     * @param array $data The request data
+     * @param  array $data The request data
      * @throws Exceptions\InvalidArgumentException When any of the request values are empty except the body, params, and files
      */
     public function __construct(array $data)
@@ -39,6 +40,16 @@ class WebRequest
         $this->data = $data;
     }
 
+    /**
+     * Returns a unix timestamp recorded at the time the request was made
+     * 
+     * @return int
+     */
+    public function getTime()
+    {
+        return $this->data["time"];
+    }
+    
     /**
      * Returns the http version, eg "HTTP/1.1"
      * 
