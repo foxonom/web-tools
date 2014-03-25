@@ -228,7 +228,7 @@ class WebClientTest
     public function testRequest_Get_Auth()
     {
         $this->web->setBasicAuth("test_user", "test_pass");
-        $actual = $this->request();
+        $this->request();
         $this->assertArrayHasKey(
             "Authorization",
             $this->web->getRequestHeaders()
