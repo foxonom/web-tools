@@ -109,6 +109,9 @@ class Utils
      * Used when you need to append a query string to a url which may already have
      * a query string. The $query argument be either a string, or an array.
      * 
+     * Note: This method does not merge values from the query string which are already
+     * in the url.
+     * 
      * @param  string       $url   The base rul
      * @param  string|array $query The query string to append
      * @return string
