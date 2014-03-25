@@ -68,13 +68,23 @@ class WebClientTest
     /**
      * @covers Headzoo\Web\Tools\WebClient::request
      */
-    public function testRequest_Get()
+    public function testRequest()
     {
         $actual = $this->request();
         $this->assertEquals(
             parse_url(self::TEST_URL, PHP_URL_PATH),
             $actual["REQUEST_URI"]
         );
+    }
+
+    /**
+     * @covers Headzoo\Web\Tools\WebClient::get
+     */
+    public function testGet()
+    {
+        $this->url = self::TEST_URL;
+        $this->response = $this->web->get($this->url);
+        $this->assertNotEmpty($this->response->getBody());
     }
 
     /**
@@ -165,6 +175,16 @@ class WebClientTest
             "programmer",
             $actual["GET"]["job"]
         );
+    }
+
+    /**
+     * @covers Headzoo\Web\Tools\WebClient::post
+     */
+    public function testPost()
+    {
+        $this->url = self::TEST_URL;
+        $this->response = $this->web->post($this->url, "name=Sean");
+        $this->assertNotEmpty($this->response->getBody());
     }
 
     /**

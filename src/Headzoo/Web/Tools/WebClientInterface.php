@@ -172,6 +172,38 @@ interface WebClientInterface
      * @throws Exceptions\WebException If the request generates an error
      */
     public function request($url);
+
+    /**
+     * Perform an http GET request on the given url
+     *
+     * This method is a shortcut from writing the following code:
+     * ```php
+     * $web = new WebClient();
+     * $web->setMethod(HttpMethods::GET);
+     * $web->request($url);
+     * ```
+     *
+     * @param  string $url The server url
+     * @return WebResponse
+     */
+    public function get($url);
+
+    /**
+     * Perform an http POST request on the given url
+     *
+     * This method is a shortcut from writing the following code:
+     * ```php
+     * $web = new WebClient();
+     * $web->setMethod(HttpMethods::POST);
+     * $web->setData($data);
+     * $web->request($url);
+     * ```
+     *
+     * @param  string $url  The server url
+     * @param  mixed  $data The post data
+     * @return WebResponse
+     */
+    public function post($url, $data);
     
     /**
      * Returns useful debugging information about the last request made

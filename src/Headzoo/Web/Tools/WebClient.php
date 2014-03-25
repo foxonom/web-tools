@@ -213,6 +213,25 @@ class WebClient
     /**
      * {@inheritDoc}
      */
+    public function get($url)
+    {
+        $this->setMethod(HttpMethods::GET);
+        return $this->request($url);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function post($url, $data)
+    {
+        $this->setMethod(HttpMethods::POST);
+        $this->setData($data);
+        return $this->request($url);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getInformation()
     {
         return $this->info;
