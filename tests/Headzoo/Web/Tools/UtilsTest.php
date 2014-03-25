@@ -51,7 +51,23 @@ class UtilsTest
             ["x-forwarded-for", true,   "Forwarded-For"],
             ["x-att-deviceid",  false,  "X-ATT-DeviceId"],
             ["x-att-deviceid",  true,   "ATT-DeviceId"],
-            ["att-deviceid",    false,  "ATT-DeviceId"]
+            ["att-deviceid",    false,  "ATT-DeviceId"],
+            
+            [
+                ["content-type", "xss-protection"],
+                false,
+                ["Content-Type", "XSS-Protection"]
+            ],
+            [
+                ["content-type", "x-ua-compatible"],
+                false,
+                ["Content-Type", "X-UA-Compatible"]
+            ],
+            [
+                ["CONTENT_TYPE", "x-ua-compatible"],
+                true,
+                ["Content-Type", "UA-Compatible"]
+            ]
         ];
     }
 

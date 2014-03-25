@@ -39,6 +39,8 @@ class Utils
      * The experimental header prefix "X-" is removed when $stripX is true. Prefixes are never added to the field
      * names.
      * 
+     * When $headerName is an array, each value in the array will be normalized.
+     * 
      * Examples:
      * ```php
      * // The output from these method calls will be exactly "Content-Type".
@@ -60,32 +62,43 @@ class Utils
      * 
      * // This method call throws an exception because it contains special characters.
      * echo Utils::normalizeHeaderName("content*type");
+     * 
+     * // Using an array of header names.
+     * $names = ["CONTENT_TYPE", "XSS_PROTECTION"];
+     * $normal = Utils::normalizeHeaderName($names);
+     * // Produces: ["Content-Type", "XSS-Protection"]
      * ```
      * 
-     * @param  string $headerName The header name
-     * @param  bool   $stripX     Should X- prefixes be stripped?
+     * @param  string|array $headerName The header name or array of header names
+     * @param  bool         $stripX     Should X- prefixes be stripped?
      * @return string
      * @throws InvalidArgumentException When the header name cannot be normalized
      */
     public static function normalizeHeaderName($headerName, $stripX = false)
     {
-        $headerName = trim((string)$headerName, " \t:");
-        if (count(explode(":", $headerName)) > 1 || preg_match("/[^\\w\\s-]/", $headerName)) {
-            throw new InvalidArgumentException(
-                "String '{$headerName}' cannot be normalized because of bad formatting."
-            );
-        }
-        
-        $headerName = str_replace(["-", "_"], " ", $headerName);
-        $headerName = ucwords(strtolower($headerName));
-        $headerName = str_replace(" ", "-", $headerName);
-        if ($stripX && substr($headerName, 0, 2) === "X-") {
-            $headerName = substr($headerName, 2);
-        }
-        
-        $index = Arrays::findString(self::$headerSpecialCases, $headerName);
-        if (false !== $index) {
-            $headerName = self::$headerSpecialCases[$index];
+        if (is_array($headerName)) {
+            array_walk($headerName, function(&$name) use($stripX) {
+                $name = self::normalizeHeaderName($name, $stripX);        
+            });
+        } else {
+            $headerName = trim((string)$headerName, " \t:");
+            if (count(explode(":", $headerName)) > 1 || preg_match("/[^\\w\\s-]/", $headerName)) {
+                throw new InvalidArgumentException(
+                    "String '{$headerName}' cannot be normalized because of bad formatting."
+                );
+            }
+            
+            $headerName = str_replace(["-", "_"], " ", $headerName);
+            $headerName = ucwords(strtolower($headerName));
+            $headerName = str_replace(" ", "-", $headerName);
+            if ($stripX && substr($headerName, 0, 2) === "X-") {
+                $headerName = substr($headerName, 2);
+            }
+            
+            $index = Arrays::findString(self::$headerSpecialCases, $headerName);
+            if (false !== $index) {
+                $headerName = self::$headerSpecialCases[$index];
+            }
         }
         
         return $headerName;
