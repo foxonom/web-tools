@@ -5,40 +5,35 @@ namespace Headzoo\Web\Tools;
  * Represents a client http request.
  */
 class WebRequest
+    extends AbstractHttp
 {
     /**
-     * The request data
+     * The request values
      * @var array
      */
-    protected $data = [
+    protected $values = [
         "time"    => null,
         "method"  => null,
         "version" => null,
         "host"    => null,
         "path"    => null,
-        "headers" => [],
         "body"    => null,
+        "headers" => [],
         "params"  => [],
         "files"   => []
     ];
 
     /**
-     * Constructor
-     * 
-     * @param  array $data The request data
-     * @throws Exceptions\InvalidArgumentException When any of the request values are empty except the body, params, and files
+     * List of required request/response values
+     * @var array
      */
-    public function __construct(array $data)
-    {
-        foreach($this->data as $key => $value) {
-            if (empty($data[$key]) && "body" !== $key && "params" !== $key && "files" !== $key) {
-                throw new Exceptions\InvalidArgumentException(
-                    "The data value for key '{$key}' cannot be empty."
-                );
-            }
-        }
-        $this->data = $data;
-    }
+    protected $required = [
+        "time",
+        "method",
+        "version",
+        "host",
+        "path"
+    ];
 
     /**
      * Returns a unix timestamp recorded at the time the request was made
@@ -47,7 +42,7 @@ class WebRequest
      */
     public function getTime()
     {
-        return $this->data["time"];
+        return $this->values["time"];
     }
     
     /**
@@ -57,7 +52,7 @@ class WebRequest
      */
     public function getVersion()
     {
-        return $this->data["version"];
+        return $this->values["version"];
     }
     
     /**
@@ -67,7 +62,7 @@ class WebRequest
      */
     public function getMethod()
     {
-        return $this->data["method"];
+        return $this->values["method"];
     }
 
     /**
@@ -77,7 +72,7 @@ class WebRequest
      */
     public function getHost()
     {
-        return $this->data["host"];
+        return $this->values["host"];
     }
 
     /**
@@ -87,7 +82,7 @@ class WebRequest
      */
     public function getPath()
     {
-        return $this->data["path"];
+        return $this->values["path"];
     }
 
     /**
@@ -97,7 +92,7 @@ class WebRequest
      */
     public function getHeaders()
     {
-        return $this->data["headers"];
+        return $this->values["headers"];
     }
 
     /**
@@ -107,7 +102,7 @@ class WebRequest
      */
     public function getBody()
     {
-        return $this->data["body"];
+        return $this->values["body"];
     }
 
     /**
@@ -117,7 +112,7 @@ class WebRequest
      */
     public function getParams()
     {
-        return $this->data["params"];
+        return $this->values["params"];
     }
 
     /**
@@ -127,6 +122,6 @@ class WebRequest
      */
     public function getFiles()
     {
-        return $this->data["files"];
+        return $this->values["files"];
     }
 } 
