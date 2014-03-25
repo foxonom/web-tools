@@ -16,28 +16,47 @@ class WebClient
     implements WebClientInterface
 {
     /**
-     * The http status code returned by the requested server
-     * @var int
-     */
-    protected $statusCode = 200;
-
-    /**
-     * The full request headers
+     * Standard curl options
      * @var array
      */
-    protected $requestHeaders;
+    private static $curlOptions = [
+        CURLOPT_USERAGENT       => self::DEFAULT_USER_AGENT,
+        CURLOPT_RETURNTRANSFER  => true,
+        CURLINFO_HEADER_OUT     => true,
+        CURLOPT_HEADER          => true,
+        CURLOPT_VERBOSE         => true,
+        CURLOPT_FOLLOWLOCATION  => true
+    ];
 
     /**
-     * Information on the last request
+     * The url being requested
+     * @var string
+     */
+    protected $url;
+
+    /**
+     * cURL resource to make the request
+     * @var resource
+     */
+    protected $curl;
+
+    /**
+     * Used to release the curl resource
+     * @var Complete
+     */
+    protected $complete;
+    
+    /**
+     * Information about the last request
      * @var array
      */
-    protected $requestInfo = [];
+    protected $info = [];
 
     /**
      * The request method
      * @var string
      */
-    protected $method = HttpMethods::GET;
+    protected $method;
     
     /**
      * The get/post data
@@ -46,105 +65,53 @@ class WebClient
     protected $data;
 
     /**
+     * The basic auth username and password
+     * @var array
+     */
+    protected $auth = [];
+    
+    /**
+     * The user agent string
+     * @var string
+     */
+    protected $userAgent;
+    
+    /**
      * Headers to send with the request
      * @var array
      */
     protected $headers = [
         "Content-Type" => self::DEFAULT_CONTENT_TYPE
     ];
-
-    /**
-     * The user agent string
-     * @var string
-     */
-    protected $userAgent;
-
-    /**
-     * The basic auth username and password
-     * @var array
-     */
-    protected $auth = [];
-
-    /**
-     * The url being requested
-     * @var string
-     */
-    private $url;
     
-    /**
-     * cURL resource to make the request
-     * @var resource
-     */
-    private $curl;
-
-    /**
-     * Used to release the curl resource
-     * @var Complete
-     */
-    private $complete;
-
     /**
      * Used to parse raw http request headers
      * @var Parsers\HeadersInterface
      */
-    private $headersParser;
+    protected $headersParser;
 
     /**
      * Used to build raw http request headers
      * @var Builders\HeadersInterface
      */
-    private $headersBuilder;
+    protected $headersBuilder;
+
+    /**
+     * The parsed response values
+     * @var array
+     */
+    protected $response = [];
 
     /**
      * Constructor
      * 
-     * @param string $method    The request method, one of WebClient::METHOD_GET or WebClient::METHOD_POST
+     * @param string $method    The request method, one of the HttpMethods constants
      * @param string $userAgent The user agent string
      */
     public function __construct($method = HttpMethods::GET, $userAgent = self::DEFAULT_USER_AGENT)
     {
         $this->setMethod($method);
         $this->setUserAgent($userAgent);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setHeadersParser(Parsers\HeadersInterface $headersParser)
-    {
-        $this->headersParser = $headersParser;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getHeadersParser()
-    {
-        if (null === $this->headersParser) {
-            $this->headersParser = new Parsers\Headers();
-        }
-        return $this->headersParser;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setHeadersBuilder(Builders\HeadersInterface $headersBuilder)
-    {
-        $this->headersBuilder = $headersBuilder;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getHeadersBuilder()
-    {
-        if (null === $this->headersBuilder) {
-            $this->headersBuilder = new Builders\Headers();
-        }
-        return $this->headersBuilder;
     }
 
     /**
@@ -203,29 +170,30 @@ class WebClient
         $this->auth["pass"] = (string)$pass;
         return $this;
     }
-
+    
     /**
      * {@inheritDoc}
      */
-    public function getStatusCode()
+    public function request($url)
     {
-        return $this->statusCode;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getRequestHeaders()
-    {
-        if (null === $this->requestHeaders) {
-            $this->requestHeaders = [];
-            if (!empty($this->requestInfo["request_header"])) {
-                $headersParser        = $this->getHeadersParser();
-                $this->requestHeaders = $headersParser->parse($this->requestInfo["request_header"]);
-            }
-        }
+        $this->url = $url;
+        $this->response = [
+            "time"      => time(),
+            "method"    => $this->method,
+            "version"   => null,
+            "code"      => 0,
+            "body"      => null,
+            "info"      => [],
+            "headers"   => []
+        ];
         
-        return $this->requestHeaders;
+        $this->validate();
+        $this->prepareCurl();
+        $this->prepareHeaders();
+        $this->prepareData();
+        $this->exec();
+        
+        return new WebResponse($this->response);
     }
 
     /**
@@ -233,70 +201,94 @@ class WebClient
      */
     public function getInformation()
     {
-        return $this->requestInfo;
+        return $this->info;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function request($url)
+    public function setHeadersParser(Parsers\HeadersInterface $headersParser)
     {
-        $this->url = $url;
-        $this->validate();
-        $this->prepare();
-        
-        curl_setopt($this->curl, CURLOPT_URL, $this->url);
-        $response = curl_exec($this->curl);
-        $this->requestInfo = curl_getinfo($this->curl);
-        $this->statusCode  = $this->requestInfo["http_code"];
-        if (false === $response) {
+        $this->headersParser = $headersParser;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getHeadersParser()
+    {
+        if (null === $this->headersParser) {
+            $this->headersParser = new Parsers\Headers();
+        }
+        return $this->headersParser;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setHeadersBuilder(Builders\HeadersInterface $headersBuilder)
+    {
+        $this->headersBuilder = $headersBuilder;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getHeadersBuilder()
+    {
+        if (null === $this->headersBuilder) {
+            $this->headersBuilder = new Builders\Headers();
+        }
+        return $this->headersBuilder;
+    }
+
+    /**
+     * Validates the request values for correctness
+     *
+     * @throws Exceptions\WebException When an incorrect value is found
+     */
+    protected function validate()
+    {
+        if ($this->method === HttpMethods::POST && empty($this->data)) {
             throw new Exceptions\WebException(
-                curl_error($this->curl),
-                curl_errno($this->curl)
+                "Using method POST without data."
             );
         }
-
-        return $response;
     }
-    
+
     /**
-     * Prepares curl to make an http request
+     * Initializes the curl resource
      */
-    protected function prepare()
+    protected function prepareCurl()
     {
-        // Errors happen when curl resources are reused.
-        if (is_resource($this->curl)) {
-            curl_close($this->curl);
-            $this->curl = null;
-        }
-        if (null !== $this->complete) {
+        if ($this->complete) {
             $this->complete = null;
         }
 
-        $this->curl     = curl_init();
+        $this->curl = curl_init();
         $this->complete = Complete::factory(function() {
             if ($this->curl) {
                 curl_close($this->curl);
             }
+            $this->curl     = null;
             $this->complete = null;
         });
-        
-        $opts = [
-            CURLOPT_RETURNTRANSFER  => true,
-            CURLOPT_USERAGENT       => $this->userAgent,
-            CURLINFO_HEADER_OUT     => true,
-            CURLOPT_FOLLOWLOCATION  => true,
-            CURLOPT_POST            => $this->method === HttpMethods::POST
-        ];
-        if (!empty($this->auth)) {
-            $opts[CURLOPT_USERPWD] = sprintf("%s:%s", $this->auth["user"], $this->auth["pass"]);
-        }
-        foreach($opts as $opt => $value) {
-            curl_setopt($this->curl, $opt, $value);
-        }
 
-        $this->prepareHeaders();
-        $this->prepareData();
+        foreach(self::$curlOptions as $option => $value) {
+            curl_setopt($this->curl, $option, $value);
+        }
+        if ($this->method === HttpMethods::POST) {
+            curl_setopt($this->curl, CURLOPT_POST, true);
+        }
+        if (!empty($this->auth)) {
+            curl_setopt($this->curl, CURLOPT_USERPWD, sprintf(
+                "%s:%s",
+                $this->auth["user"],
+                $this->auth["pass"]
+            ));
+        }
     }
     
     /**
@@ -306,14 +298,8 @@ class WebClient
     {
         if (!empty($this->data)) {
             if ($this->method === HttpMethods::GET) {
-                if (is_array($this->data)) {
-                    $data = http_build_query($this->data);
-                } else {
-                    $data = $this->data;
-                }
-                $combiner  = (strpos($this->url, "?") === false) ? "?" : "&";
-                $this->url = "{$this->url}{$combiner}{$data}";
-            } else {
+                $this->url = Utils::appendUrlQuery($this->url, $this->data);
+            } else if ($this->method === HttpMethods::POST) {
                 curl_setopt($this->curl, CURLOPT_POSTFIELDS, $this->data);
             }
         }
@@ -330,23 +316,44 @@ class WebClient
             unset($this->headers["Content-Type"]);
         }
         
-        $headers = $this->getHeadersBuilder()->normalize($this->headers);
+        curl_setopt($this->curl, CURLOPT_USERAGENT, $this->userAgent);
         if (!empty($headers)) {
+            $headers = $this->getHeadersBuilder()->normalize($this->headers);
             curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
         }
     }
 
     /**
-     * Validates the request values for correctness
-     * 
-     * @throws Exceptions\WebException When an incorrect value is found
+     * Executes the configured request
      */
-    protected function validate()
+    protected function exec()
     {
-        if ($this->method === HttpMethods::POST && empty($this->data)) {
+        curl_setopt($this->curl, CURLOPT_URL, $this->url);
+        $response_text = curl_exec($this->curl);
+        $this->info = curl_getinfo($this->curl);
+        if (false === $response_text) {
             throw new Exceptions\WebException(
-                "Using method POST without data."
+                curl_error($this->curl),
+                curl_errno($this->curl)
             );
         }
+        
+        /** @var $options string */
+        $this->response["info"] = $this->info;
+        $this->response["code"] = $this->response["info"]["http_code"];
+        $this->response["body"] = substr(
+            $response_text,
+            $this->response["info"]["header_size"]
+        );
+        $this->response["headers"] = substr(
+            $response_text,
+            0,
+            $this->response["info"]["header_size"]
+        );
+        $this->response["headers"] = $this->getHeadersParser()->parse(
+            $this->response["headers"],
+            $options
+        );
+        $this->response["version"] = explode(" ", $options, 3)[0];
     }
 } 

@@ -142,7 +142,16 @@ interface WebClientInterface
     public function setBasicAuth($user, $pass);
 
     /**
-     * Returns information about the last request
+     * Sends a request to an http server and returns the response
+     *
+     * @param  string $url The server url
+     * @return WebResponse
+     * @throws Exceptions\WebException If the request generates an error
+     */
+    public function request($url);
+    
+    /**
+     * Returns useful debugging information about the last request made
      * 
      * The return value *may* contain one or more of the following keys:
      * ```
@@ -177,13 +186,4 @@ interface WebClientInterface
      * @return array
      */
     public function getInformation();
-
-    /**
-     * Sends a request to an http server and returns the response
-     *
-     * @param  string $url The server url
-     * @return WebResponse
-     * @throws Exceptions\WebException If the request generates an error
-     */
-    public function request($url);
 } 
