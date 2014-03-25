@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "keywords": ["php", "web", "http"],
-    "version": "0.2",
+    "version": "0.3",
     "minimum-stability" : "dev",
     "authors": [
         {
