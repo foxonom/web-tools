@@ -27,7 +27,8 @@ class WebClient
         CURLINFO_HEADER_OUT     => true,
         CURLOPT_HEADER          => true,
         CURLOPT_VERBOSE         => true,
-        CURLOPT_FOLLOWLOCATION  => true
+        CURLOPT_FOLLOWLOCATION  => true,
+        CURLOPT_SSL_VERIFYPEER  => false
     ];
 
     /**
