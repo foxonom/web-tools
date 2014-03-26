@@ -119,6 +119,7 @@ TODO
 ----
 * Add cookie management.
 * Add certificate management.
+* Create more specialized exceptions.
 
 
 License
