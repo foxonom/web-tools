@@ -54,7 +54,7 @@ class HttpTest
 
     /**
      * @covers Headzoo\Web\Tools\Http::getValidator
-     * @expectedException Headzoo\Utilities\Exceptions\ValidationFailedException
+     * @expectedException Headzoo\Core\Exceptions\ValidationFailedException
      */
     public function testGetValidator_Missing()
     {

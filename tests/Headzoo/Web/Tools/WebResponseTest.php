@@ -39,7 +39,7 @@ class WebResponseTest
 
     /**
      * @covers Headzoo\Web\Tools\WebResponse::__construct
-     * @expectedException Headzoo\Utilities\Exceptions\ValidationFailedException
+     * @expectedException Headzoo\Core\Exceptions\ValidationFailedException
      */
     public function testConstruct_InvalidArgumentException()
     {

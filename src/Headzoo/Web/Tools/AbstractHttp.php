@@ -1,7 +1,7 @@
 <?php
 namespace Headzoo\Web\Tools;
-use Headzoo\Utilities\Validator;
-use Headzoo\Utilities\ValidatorInterface;
+use Headzoo\Core\Validator;
+use Headzoo\Core\ValidatorInterface;
 
 /**
  * Represents an http request or response.

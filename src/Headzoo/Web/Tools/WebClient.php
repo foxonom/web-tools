@@ -1,6 +1,6 @@
 <?php
 namespace Headzoo\Web\Tools;
-use Headzoo\Utilities\Complete;
+use Headzoo\Core\Complete;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 

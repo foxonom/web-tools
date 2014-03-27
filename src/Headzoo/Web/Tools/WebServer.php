@@ -1,6 +1,6 @@
 <?php
 namespace Headzoo\Web\Tools;
-use Headzoo\Utilities\Complete;
+use Headzoo\Core\Complete;
 
 /**
  * Acts as a small http server capable of handling one request.
