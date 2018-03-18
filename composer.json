@@ -16,7 +16,7 @@
         "type": "package",
         "package": {
             "version": "dev-bugfix",
-            "name": "headzoo/utilities",
+            "name": "headzoo/core",
             "source":
             {
             "url": "https://github.com/foxonom/core",
@@ -29,7 +29,7 @@
         "php": ">=5.5.0",
         "ext-curl": "*",
         "psr/log": "dev-master",
-        "headzoo/utilities": "dev-bugfix"
+        "headzoo/core": "dev-bugfix"
     },
     "autoload": {
         "psr-4": {
