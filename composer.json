@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Headzoo\\Web\\Tools": "src/Headzoo/Web/Tools"
+            "Headzoo\\Web\\Tools\\": "src/Headzoo/Web/Tools"
         }
     }
 }
