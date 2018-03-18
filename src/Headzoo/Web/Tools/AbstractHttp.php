@@ -1,13 +1,16 @@
 <?php
 namespace Headzoo\Web\Tools;
-use Headzoo\Utilities\Validator;
-use Headzoo\Utilities\ValidatorInterface;
+
+
+use Headzoo\Core\FunctionsTrait;
+
 
 /**
  * Represents an http request or response.
  */
 abstract class AbstractHttp
 {
+    use FunctionsTrait;
     /**
      * The request/response values
      * @var array
@@ -35,9 +38,9 @@ abstract class AbstractHttp
     public function __construct(array $values, ValidatorInterface $validator = null)
     {
         $this->setValues($values);
-        if (null !== $validator) {
-            $this->setValidator($validator);
-        }
+//        if (null !== $validator) {
+//            $this->setValidator($validator);
+//        }
     }
 
     /**
@@ -48,7 +51,7 @@ abstract class AbstractHttp
     public function getValidator()
     {
         if (null === $this->validator) {
-            $this->validator = new Validator();
+            $this->validator = self::validateRequired();
         }
         return $this->validator;
     }
@@ -83,7 +86,7 @@ abstract class AbstractHttp
      */
     public function setValues(array $values)
     {
-        $this->getValidator()->validateRequired($values, $this->required);
+        self::validateRequired($values, $this->required);
         $this->values = array_merge($this->values, $values);
         
         return $this;

@@ -12,15 +12,28 @@
             "email": "sean@headzoo.io"
         }
     ],
+    "repositories": [{
+        "type": "package",
+        "package": {
+            "version": "dev-bugfix",
+            "name": "headzoo/utilities",
+            "source":
+            {
+            "url": "https://github.com/foxonom/core",
+            "type": "git",
+            "reference": "dev-bugfix"
+            }
+        }
+    }],
     "require": {
         "php": ">=5.5.0",
         "ext-curl": "*",
         "psr/log": "dev-master",
-        "headzoo/utilities": "dev-master"
+        "headzoo/utilities": "dev-bugfix"
     },
     "autoload": {
-        "psr-0": {
-            "Headzoo": "src/"
+        "psr-4": {
+            "Headzoo\\Web\\Tools": "src/Headzoo/Web/Tools"
         }
     }
 }

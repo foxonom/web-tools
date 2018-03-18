@@ -1,6 +1,7 @@
 <?php
 namespace Headzoo\Web\Tools;
-use Headzoo\Utilities\Arrays;
+//use Headzoo\Utilities\Arrays;
+use Headzoo\Core\Arrays;
 
 /**
  * Contains static methods used by classes in this namespace.

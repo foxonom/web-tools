@@ -1,6 +1,7 @@
 <?php
 namespace Headzoo\Web\Tools;
-use Headzoo\Utilities\Complete;
+//use Headzoo\Utilities\Complete;
+use Headzoo\Core\SmartCallable;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
@@ -309,7 +310,7 @@ class WebClient
     protected function prepareCurl()
     {
         $this->curl = curl_init();
-        $this->complete = Complete::factory(function() {
+        $this->complete = SmartCallable::factory(function() {
             if ($this->curl) {
                 curl_close($this->curl);
             }
